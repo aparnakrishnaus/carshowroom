@@ -1,0 +1,169 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+
+  .booking-history {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+  }
+
+  .booking-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: black;
+  }
+
+  .booking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .booking-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .booking-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .booking-date {
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .booking-service {
+    color: #495057;
+    font-size: 0.95rem;
+  }
+
+  .booking-meta span {
+    display: inline-block;
+    margin-right: 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+
+  .no-bookings {
+    text-align: center;
+    color: #6c757d;
+    padding: 1.5rem;
+    border-top: 1px solid #ccc;
+  }
+
+  .btn-group {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-main {
+    padding: 0.5rem 1.2rem;
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    text-align: center;
+  }
+
+  .btn-back {
+    background-color: #e0e0e0;
+    color: #000;
+    border: 1px solid #c2c2c2;
+  }
+
+  .btn-back:hover {
+    background-color: #d0d0d0;
+    color: black;
+  }
+
+  .btn-profile {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #111;
+  }
+
+  .btn-profile:hover {
+    background-color: #333;
+    border-color: #333;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .booking-list li {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .booking-meta {
+      margin-top: 0.5rem;
+    }
+
+    .btn-main {
+      width: 100%;
+    }
+  }
+</style>
+
+ <div class="page-header mt-5">
+        <h2>Customer Bookings</h2>
+         {% include "accounts/_top_icons.html" %}
+        <a href="{% url 'admin_dashboard' %}" title="Back to Dashboard"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+
+     <div class="divider bg-secondary mb-3" style="height:2px;"></div>
+
+<div class="booking-history">
+  <div class="booking-header">
+    <h2>{{ customer.username }}'s Booking History</h2>
+  </div>
+
+  {% if bookings %}
+  <ul class="booking-list">
+    {% for booking in bookings %}
+    <li>
+      <div class="booking-info">
+        <span class="booking-date">Booked On: {{ booking.created_at|date:"M d, Y" }}</span>
+        <span class="booking-service">{{ booking.car.name }} ({{ booking.get_booking_type_display }})</span>
+      </div>
+      <div class="booking-meta">
+        <span>Date: {{ booking.date|date:"M d, Y" }}</span>
+        {% if booking.time %}
+          <span>Time: {{ booking.time }}</span>
+        {% endif %}
+        {% if booking.duration_days %}
+          <span>Duration: {{ booking.duration_days }} day{% if booking.duration_days > 1 %}s{% endif %}</span>
+        {% endif %}
+        <span>Status: {{ booking.status }}</span>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p class="no-bookings">No bookings found.</p>
+  {% endif %}
+
+  <div class="btn-group">
+    <a href="{% url 'manage_customers' %}" class="btn-main btn-back">← Back</a>
+    <a href="{% url 'customer_profile' customer.id %}" class="btn-main btn-profile">View Profile</a>
+  </div>
+</div>
+
+
+
+{% endblock %}

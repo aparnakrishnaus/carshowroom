@@ -1,0 +1,272 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+    .edit-car-container {
+        max-width: 850px;
+        margin: 50px auto;
+        background: linear-gradient(145deg, #111, #1a1a1a);
+        color: #f5f5f5;
+        border: 1px solid silver;
+        border-radius: 12px;
+        padding: 35px;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .edit-car-container h2 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 18px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #ccc;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        background-color: #222;
+        border: 1px solid #333;
+        color: #f5f5f5;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        padding: 10px 12px;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        background-color: #1b1b1b;
+        border-color: #999;
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
+    }
+
+    textarea.form-control {
+        resize: none;
+        min-height: 70px;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 8px 14px;
+        transition: 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #ff7b00;
+        border: none;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background-color: #ffa041;
+    }
+
+    .btn-secondary {
+        background-color: #333;
+        border: none;
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #555;
+    }
+
+    img.car-image {
+        display: block;
+        margin-top: 8px;
+        width: 220px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #333;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .extra-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .extra-image-box {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        position: relative;
+    }
+
+    .extra-image-box img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #444;
+        margin-bottom: 6px;
+    }
+
+    .update-btn,
+    .delete-btn {
+        font-size: 0.75rem;
+        padding: 4px 6px;
+        margin: 2px auto;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        width: 80px;
+    }
+
+    .update-btn {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .update-btn:hover {
+        background-color: #1e7e34;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .delete-btn:hover {
+        background-color: #a71d2a;
+    }
+
+    .update-form {
+        display: none;
+        margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+        .extra-images {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+
+        img.car-image {
+            width: 100%;
+            height: auto;
+        }
+    }
+</style>
+
+<div class="edit-car-container">
+    <h2>Edit Car: {{ car.name }}</h2>
+    <a href="{% url 'manage_cars' %}" class="btn btn-secondary btn-sm mb-3">← Back to Cars</a>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Main Car Details -->
+        <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" value="{{ car.name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Category</label>
+            <input type="text" name="category" class="form-control" value="{{ car.category }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Brand</label>
+            <input type="text" name="brand" class="form-control" value="{{ car.brand }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Model Year</label>
+            <input type="number" name="model_year" class="form-control" value="{{ car.model_year }}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Price (₹)</label>
+            <input type="number" name="price" class="form-control" value="{{ car.price }}" step="0.01">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Featured</label>
+            <input type="checkbox" name="featured" {% if car.featured %}checked{% endif %}>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Main Image</label>
+            <input type="file" name="image" class="form-control">
+            {% if car.image %}
+            <img src="{{ car.image.url }}" alt="Car Image" class="car-image">
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Extra Images</label>
+            <div id="extra-images-container">
+                {% if car.extra_images.all %}
+                {% for image in car.extra_images.all %}
+                <div class="extra-image-box">
+                    <img src="{{ image.image.url }}" alt="Extra Image">
+                    <button type="button" class="update-btn" onclick="toggleUpdate(this)">Update</button>
+                    <button type="button" class="delete-btn" onclick="deleteImage('{{ image.id }}')">Delete</button>
+                    <!-- Hidden input for updating  image -->
+                    <input type="file" name="extra_image_{{ image.id }}" class="update-form">
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- If no extra images, allow at least one input -->
+                <div class="extra-image-box">
+                    <input type="file" name="new_extra_image_0" class="update-form" style="display:block;">
+                </div>
+                {% endif %}
+            </div>
+            <button type="button" id="add-new-extra" class="btn btn-secondary btn-sm mt-2">+ Add Extra Image</button>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary mt-3">Update Car</button>
+    </form>
+</div>
+
+<script>
+    function toggleUpdate(btn) {
+        const box = btn.parentElement;
+        const input = box.querySelector('.update-form');
+        input.style.display = input.style.display === "block" ? "none" : "block";
+    }
+
+    // Counter for new images
+    let newExtraCount = 0;
+
+    document.getElementById('add-new-extra').addEventListener('click', function () {
+        const container = document.getElementById('extra-images-container');
+        const div = document.createElement('div');
+        div.classList.add('extra-image-box');
+        div.innerHTML = `
+        <input type="file" name="new_extra_image_${newExtraCount}" class="update-form" style="display:block;">
+        <button type="button" class="delete-btn" onclick="this.parentElement.remove()">Delete</button>
+    `;
+        container.appendChild(div);
+        newExtraCount++;
+    });
+
+
+    function deleteImage(id) {
+        if (confirm('Are you sure you want to delete this image?')) {
+            window.location.href = `/admin/delete_car_image/${id}/`;
+        }
+    }
+</script>
+
+{% endblock %}

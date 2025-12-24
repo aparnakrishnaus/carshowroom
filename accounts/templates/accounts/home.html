@@ -1,0 +1,1466 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}Home - Prestige Lane{% endblock %}
+
+{% block content %}
+
+<style>
+  .car-cube-banner {
+    position: relative;
+    height: 75vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .banner-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: brightness(0.85) contrast(1.1);
+
+  }
+
+  #bg-video {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .banner-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .brand-title {
+    font-size: 4rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 3px;
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+    margin-bottom: 40px;
+    font-family: var(--main-font);
+  }
+
+  .brand-title span {
+    font-style: italic;
+    font-family: var(--main-font);
+  }
+
+  .tagline {
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    margin-top: 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .car-cube-banner::before,
+  .car-cube-banner::after {
+    content: "";
+    position: absolute;
+    top: 10%;
+    bottom: 10%;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #fff, transparent);
+    opacity: 0.5;
+    z-index: 2;
+  }
+
+  .car-cube-banner::before {
+    left: 60px;
+  }
+
+  .car-cube-banner::after {
+    right: 60px;
+  }
+
+  .car-cube-banner:hover::before,
+  .car-cube-banner:hover::after {
+    opacity: 0.8;
+  }
+
+  .banner-btn {
+    display: inline-block;
+    padding: 10px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 35px;
+    backdrop-filter: blur(8px);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+  }
+
+  .banner-btn:hover {
+    background: #ffffff;
+    color: #000;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+    transform: translateY(-3px);
+  }
+
+
+  /* ______________________________________________________________________________________ */
+
+  .divider-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px 0;
+    gap: 15px;
+  }
+
+  .divider-dots span {
+    width: 10px;
+    height: 10px;
+    background: #eaeaea;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite ease-in-out;
+  }
+
+  .divider-dots span:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .divider-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .divider-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+      transform: scale(0.8);
+      opacity: 0.6;
+    }
+
+    40% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+  }
+
+  /* ______________________________________________________________________________________ */
+  /*latest arrivals- cards */
+  .luxury-cards-section {
+    background: linear-gradient(to bottom, #000000, #0d0d0d);
+
+  }
+
+  .luxury-heading {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-family: var(--main-font);
+  }
+
+  .luxury-heading::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .luxury-subtext {
+    font-size: 0.95rem;
+    color: var(--secondary-color);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-family: 'Poppins', sans-serif;
+
+  }
+
+  .cards-wrapper {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 20px;
+    scroll-behavior: smooth;
+  }
+
+  .card {
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1a1a1a;
+  border: 2px solid #333;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.far-left,
+.far-right {
+  width: 160px;
+  height: 300px;
+}
+
+.left,
+.right {
+  width: 200px;
+  height: 360px;
+}
+
+.main {
+  width: 260px;
+  height: 420px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+  .card:hover {
+    transform: scale(1.01) translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+  }
+
+.card a.car-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card a.car-link:hover {
+  transform: scale(1.01) translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+.card a.car-link img {
+  width: 100%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  display: block;
+}
+
+/* Car name */
+.card a.car-link h4 {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #fff;
+  text-align: center;
+  font-family: var(--main-font);
+  flex-shrink: 0;
+}
+  .btn-book {
+    display: inline-block;
+    padding: 10px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 35px;
+    backdrop-filter: blur(8px);
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    margin-bottom: 20px;
+  }
+
+  .btn-book:hover {
+    background: #ffffff;
+    color: #000;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+    transform: translateY(-3px);
+  }
+
+
+  .cards-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cards-wrapper {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* ______________________________________________________________________________________ */
+  /* --- Services Section --- */
+  .services-section {
+    padding: 80px 0;
+    text-align: center;
+    color: #f5f5f5;
+    background: linear-gradient(to bottom, #0d0d0d 0%, #0d0d0d 100%);
+  }
+
+  .services-heading {
+    font-family: var(--main-font);
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+  }
+
+  .services-heading::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .services-subtext {
+    color: var(--secondary-color);
+    margin-bottom: 60px;
+    font-size: 1rem;
+  }
+
+  .categories-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    border-left: 1px solid #5b5b5b;
+    border-right: 1px solid #5b5b5b;
+  }
+
+  .category-item {
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  .category-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #ccc;
+    transition: all 0.3s ease;
+    position: relative;
+    padding-bottom: 10px;
+  }
+
+
+  .category-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+    background: linear-gradient(120deg, #c0c0c0, #e0e0e0, #000000);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: silverMove 3s linear infinite;
+  }
+
+  @keyframes silverMove {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .category-link:hover .category-icon {
+    transform: scale(1.3);
+  }
+
+  .category-link span {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+  }
+
+  .category-link:hover span {
+    color: #fff;
+    transform: scale(1.1);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  }
+
+
+@media (max-width: 575px) {
+  .categories-wrapper {
+    flex-direction: column;
+    gap: 40px;
+    border-left: none;
+    border-right: none;
+    max-width: 100%;
+    padding: 0 15px;
+  }
+
+  .category-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .category-link span {
+    font-size: 1rem;
+  }
+
+  .services-heading {
+    font-size: 1.8rem;
+  }
+
+  .services-subtext {
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+  }
+}
+
+
+@media (min-width: 576px) and (max-width: 991px) {
+  .categories-wrapper {
+    flex-wrap: wrap;
+    gap: 50px;
+    border-left: 1px solid #5b5b5b;
+    border-right: 1px solid #5b5b5b;
+    max-width: 90%;
+  }
+
+  .category-icon {
+    font-size: 2.2rem;
+  }
+
+  .category-link span {
+    font-size: 1.05rem;
+  }
+
+  .services-heading {
+    font-size: 2rem;
+  }
+
+  .services-subtext {
+    font-size: 0.95rem;
+    margin-bottom: 50px;
+  }
+}
+
+
+@media (min-width: 992px) {
+  .categories-wrapper {
+    max-width: 900px;
+  }
+
+  .category-icon {
+    font-size: 2rem;
+  }
+
+  .category-link span {
+    font-size: 1.1rem;
+  }
+
+  .services-heading {
+    font-size: 2.2rem;
+  }
+
+  .services-subtext {
+    font-size: 1rem;
+  }
+}
+
+  /* ______________________________________________________________________________________ */
+  /* fleet */
+  .fleet-logos-section {
+    background: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+    color: #f5f5f5;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+  }
+
+  .fleet-heading {
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    font-family: var(--main-font);
+    color: var(--primary-color);
+  }
+
+  .fleet-heading::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .fleet-subtext {
+    color: var(--secondary-color);
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+.fleet-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding: 1rem 0;
+  scrollbar-width: none;
+}
+
+.fleet-scroll-wrapper::-webkit-scrollbar {
+  display: none; 
+}
+
+.fleet-scroll-inner {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  scroll-snap-type: x mandatory;
+}
+
+.fleet-card {
+  flex: 0 0 auto;
+  width: 160px;
+  background: transparent;
+  border-left: 1px solid #5b5b5b;
+  border-right: 1px solid #5b5b5b;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+}
+
+.fleet-card:hover {
+  transform: translateY(-5px);
+}
+
+.fleet-image-wrapper {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fleet-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.fleet-card:hover .fleet-image {
+  transform: scale(1.05);
+}
+
+.fleet-car-name {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #e0e0e0;
+  text-align: center;
+}
+
+.fleet-btn {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 20px;
+  padding: 4px 14px;
+  color: #f5f5f5;
+  border: 1px solid #aaa;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.fleet-btn:hover {
+  background-color: #aaa;
+  color: #000;
+}
+
+  .view-gallery-btn {
+    border-radius: 25px;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+    color: #000;
+    background-color: #ffffff;
+    border: 1px solid #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .view-gallery-btn:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+
+  @media (min-width: 768px) {
+    .fleet-scroll-wrapper {
+      overflow-x: visible;
+      padding: 0;
+    }
+
+    .fleet-scroll-inner {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .fleet-card {
+      margin: 0.5rem;
+      width: 180px;
+    }
+  }
+
+  /* ______________________________________________________________________________________ */
+  /* experience */
+  .why-us-section {
+    padding: 80px 0;
+    text-align: center;
+    color: #f5f5f5;
+    background: linear-gradient(to bottom, #1a1a1a, #0d0d0d);
+  }
+
+  .why-us-section h2 {
+    font-family: var(--main-font);
+    font-size: 2rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .why-us-section h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .why-us-section .subtext {
+    color: var(--secondary-color);
+    margin-bottom: 50px;
+    font-size: 1rem;
+  }
+
+  .features-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    flex-wrap: wrap;
+  }
+
+  .feature {
+    max-width: 220px;
+    text-align: center;
+    position: relative;
+    padding: 0 15px;
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+    background: linear-gradient(120deg, #ffffff, #b0b0b0, #f5f5f5);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 3s linear infinite;
+  }
+
+  .feature:hover .feature-icon {
+    transform: scale(1.3);
+  }
+
+  @keyframes gradientMove {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .feature h5 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .feature p {
+    font-size: 0.95rem;
+    color: #a8a8a8;
+    line-height: 1.5;
+  }
+
+  .feature:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: #c0c0c0;
+    opacity: 0.2;
+  }
+
+  @media (max-width: 768px) {
+    .features-row {
+      gap: 40px;
+    }
+
+    .feature:not(:last-child)::after {
+      display: none;
+    }
+  }
+
+  /* ______________________________________________________________________________________ */
+  /* logos */
+  .our-brands-section {
+    background: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+    color: #f5f5f5;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .brands-heading {
+    font-size: 2rem;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-family: var(--main-font);
+    color: var(--primary-color);
+  }
+
+  .brands-heading::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .brands-subtext {
+    color: var(--secondary-color);
+    margin-bottom: 40px;
+    font-size: 1rem;
+  }
+
+  /* ---------- Marquee Animation ---------- */
+  .brands-marquee {
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+
+  .brands-track {
+    display: flex;
+    gap: 10px;
+    animation: scrollBrands 25s linear infinite;
+  }
+
+  @keyframes scrollBrands {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .brands-marquee:hover .brands-track {
+    animation-play-state: paused;
+  }
+
+  .brand-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+
+  .brand-img-container {
+    width: 120px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .brand-img-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s ease, filter 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .brand-img-container img:hover {
+    transform: scale(1.15);
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+
+  .brand-name {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #dcdcdc;
+    letter-spacing: 0.5px;
+    text-transform: capitalize;
+  }
+
+  @media (max-width: 992px) {
+    .brands-track {
+      gap: 10px;
+      animation: scrollBrands 25s linear infinite;
+    }
+
+    .brand-img-container {
+      width: 100px;
+      height: 70px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .brands-heading {
+      font-size: 1.6rem;
+    }
+
+    .brands-subtext {
+      font-size: 0.9rem;
+    }
+
+    .brands-track {
+      gap: 1px;
+      animation: scrollBrands 20s linear infinite;
+    }
+
+    .brand-img-container {
+      width: 80px;
+      height: 60px;
+    }
+
+    .brand-name {
+      font-size: 0.8rem;
+    }
+  }
+
+  /* ______________________________________________________________________________________ */
+  /* closure */
+  .cta-luxury {
+    background: linear-gradient(to bottom, #1a1a1a, #0d0d0d);
+    color: #f5f5f5;
+    padding: 100px 20px;
+    position: relative;
+  }
+
+  .cta-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-family: var(--main-font);
+    color: var(--primary-color);
+  }
+
+  .cta-title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .cta-subtext {
+    color: var(--secondary-color);
+    font-size: 1rem;
+    margin-top: 10px;
+  }
+
+  .cta-luxury .btn {
+    border-radius: 25px;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+    color: #000;
+    background-color: #ffffff;
+    border: 1px solid #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .cta-luxury .btn:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .cta-title {
+      font-size: 1.6rem;
+    }
+
+    .cta-subtext {
+      font-size: 0.95rem;
+    }
+  }
+
+  /* ______________________________________________________________________________________ */
+
+
+  /* Responsive spacing */
+  @media (max-width: 992px) {
+    .car-cube-banner {
+      height: 60vh;
+    }
+
+    .brand-title {
+      font-size: 3rem;
+      margin-bottom: 30px;
+    }
+
+    .tagline {
+      font-size: 1rem;
+      margin-top: 30px;
+    }
+
+    .banner-btn {
+      padding: 8px 25px;
+      font-size: 0.9rem;
+    }
+
+    .car-cube-banner::before {
+      left: 30px;
+    }
+
+    .car-cube-banner::after {
+      right: 30px;
+    }
+
+    .luxury-heading {
+      font-size: 1.8rem;
+    }
+
+    .luxury-subtext {
+      font-size: 0.9rem;
+      max-width: 90%;
+    }
+
+    .cards-wrapper {
+      gap: 10px;
+      padding: 0 10px;
+    }
+
+    .far-left,
+    .far-right {
+      width: 120px;
+      height: 180px;
+    }
+
+    .left,
+    .right {
+      width: 160px;
+      height: 230px;
+    }
+
+    .main {
+      width: 200px;
+      height: 280px;
+    }
+
+    .btn-book {
+      padding: 9px 25px;
+      font-size: 0.95rem;
+    }
+    .card a.car-link img{
+      height: 85%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .luxury-heading {
+      font-size: 1.6rem;
+      letter-spacing: 0.5px;
+    }
+
+    .luxury-subtext {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .card a.car-link img{
+      height: 80%;
+    }
+
+    .cards-wrapper {
+      justify-content: flex-start;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 0 15px;
+    }
+
+
+    .card {
+      width: 160px !important;
+      height: 220px !important;
+    }
+
+    .btn-book {
+      font-size: 0.9rem;
+      padding: 8px 22px;
+    }
+
+    .services-list {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .service-item {
+      align-items: center;
+    }
+
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+    }
+
+    .service-content h5 {
+      font-size: 1.2rem;
+    }
+
+    .service-content p {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Small devices (mobile) */
+  @media (max-width: 576px) {
+    .car-cube-banner {
+      height: 50vh;
+    }
+
+    .brand-title {
+      font-size: 2rem;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      margin-top: 20px;
+    }
+
+    .banner-btn {
+      padding: 6px 20px;
+      font-size: 0.85rem;
+    }
+
+    .car-cube-banner::before,
+    .car-cube-banner::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .luxury-heading {
+      font-size: 1.4rem;
+    }
+
+    .luxury-subtext {
+      font-size: 0.8rem;
+      max-width: 95%;
+    }
+
+    .cards-wrapper {
+      gap: 8px;
+      padding: 0 10px;
+    }
+
+    .card {
+      width: 140px !important;
+      height: 200px !important;
+    }
+
+    .btn-book {
+      font-size: 0.85rem;
+      padding: 7px 18px;
+    }
+  }
+.car-name{
+  font-size: 12px;
+  text-align: center;
+}
+  /* ______________________________________________________________________________________ */
+</style>
+
+
+<!-- ______________________________________________________________________________________  -->
+<!-- banner -->
+<section class="car-cube-banner">
+
+  <video id="bg-video" class="banner-video" autoplay muted playsinline>
+    <source src="{% static 'videos/showroom.mp4' %}" type="video/mp4">
+  </video>
+
+  <div class="overlay"></div>
+
+  <div class="banner-content">
+    <h1 class="brand-title">Prestige<span>Lane</span></h1>
+    <p class="tagline">"Where Luxury Meets the Road"</p>
+    <a href="{% url 'car_list' %}" class="banner-btn">Explore Collection</a>
+  </div>
+</section>
+
+<!-- ______________________________________________________________________________________  -->
+
+<!-- Wave Divider -->
+<div class="divider-dots">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+
+<!-- ______________________________________________________________________________________  -->
+
+<!-- latest arrival -->
+
+<section class="luxury-cards-section">
+  <div class="container text-center mb-5">
+    <h2 class="luxury-heading">Discover the Latest Luxury Cars</h2>
+    <p class="luxury-subtext">Experience innovation, style, and performance — all in one place.</p>
+  </div>
+
+  <div class="cards-wrapper">
+    {% for car in featured_cars %}
+      {% if forloop.counter == 1 %}
+        <div class="card far-left">
+      {% elif forloop.counter == 2 %}
+        <div class="card left">
+      {% elif forloop.counter == 3 %}
+        <div class="card main">
+      {% elif forloop.counter == 4 %}
+        <div class="card right">
+      {% elif forloop.counter == 5 %}
+        <div class="card far-right">
+      {% else %}
+        <div class="card">
+      {% endif %}
+
+      
+  <a href="{% url 'car_details' car_id=car.id %}" class="car-link">
+    {% if car.image %}
+      <img src="{{ car.image.url }}" alt="{{ car.name }}">
+    {% else %}
+      <img src="{% static 'images/placeholder-car.jpg' %}" alt="No image">
+    {% endif %}
+    <h4 class="car-name text-light">{{ car.name }}</h4>
+  </a>
+
+        </div>
+    {% empty %}
+      <p class="text-center text-light">No featured cars available.</p>
+    {% endfor %}
+  </div>
+
+  <div class="book-btn-container text-center mt-4">
+    <a href="{% url 'car_list' %}" class="btn-book">Show More</a>
+  </div>
+</section>
+
+
+<!-- ______________________________________________________________________________________  -->
+
+<!-- services -->
+<section class="services-section">
+  <div class="container text-center">
+    <h2 class="services-heading">Our Services</h2>
+    <p class="services-subtext">
+      Experience the art of automotive perfection — crafted with precision and passion.
+    </p>
+
+    <div class="categories-wrapper">
+      {% for category in categories %}
+      {% with cat=category|lower %}
+      <div class="category-item">
+        <a href="{% url 'services_by_category' category %}" class="category-link">
+
+          {% if cat == "maintenance" %}
+          <i class="fas fa-screwdriver-wrench category-icon"></i>
+          {% elif cat == "detailing" %}
+          <i class="fas fa-spray-can-sparkles category-icon"></i>
+          {% elif cat == "repair" %}
+          <i class="fas fa-tools category-icon"></i>
+          {% elif cat == "customization" %}
+          <i class="fas fa-brush category-icon"></i>
+          {% elif cat == "premium" %}
+          <i class="fas fa-crown category-icon"></i>
+          {% else %}
+          <i class="fas fa-car category-icon"></i>
+          {% endif %}
+
+          <span>{{ category }}</span>
+          <div class="underline"></div>
+        </a>
+      </div>
+      {% endwith %}
+      {% empty %}
+      <p class="text-muted">No service categories available.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ______________________________________________________________________________________  -->
+<!-- fleet -->
+<section class="fleet-logos-section py-5">
+  <div class="container text-center">
+    <h2 class="fleet-heading">Our Fleet</h2>
+    <p class="fleet-subtext">Explore our collection of premium cars</p>
+
+    <div class="fleet-scroll-wrapper">
+      <div class="fleet-scroll-inner">
+        {% for car in cars|slice:":5" %}
+        <div class="fleet-card p-3 text-center">
+          <div class="fleet-image-wrapper">
+            <img src="{{ car.image.url }}" alt="{{ car.name }}" class="fleet-image img-fluid">
+          </div>
+          <h5 class="fleet-car-name mt-2">{{ car.name }}</h5>
+          <a href="{% url 'car_details'  car.id %}  " class="fleet-btn btn btn-outline-light btn-sm">
+            Explore
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="{% url 'car_list' %}" class="btn btn-outline-light view-gallery-btn">
+        View Cars
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ______________________________________________________________________________________  -->
+
+<!-- Why us -->
+<section class="why-us-section">
+  <div class="container text-center">
+    <h2>Why Choose Us</h2>
+    <p class="subtext">Luxury is not just a car. It’s an experience.</p>
+
+    <div class="features-row">
+      <div class="feature">
+        <i class="fa-solid fa-crown feature-icon"></i>
+        <h5>Unmatched Luxury</h5>
+        <p>Bespoke interiors crafted for your perfect journey.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-key feature-icon"></i>
+        <h5>Personalized Service</h5>
+        <p>Tailored experiences for every client.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-gauge-high feature-icon"></i>
+        <h5>Performance & Power</h5>
+        <p>Precision engines delivering pure adrenaline.</p>
+      </div>
+
+
+      <div class="feature">
+        <i class="fa-solid fa-star feature-icon"></i>
+        <h5>Exclusive Access</h5>
+        <p>VIP privileges for our premium clients.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-shield-alt feature-icon"></i>
+        <h5>Trusted & Secure</h5>
+        <p>Reliability and safety at every step.</p>
+      </div>
+
+      <div class="feature">
+        <i class="fa-solid fa-gem feature-icon"></i>
+        <h5>Exclusive Designs</h5>
+        <p>Every car crafted with exquisite attention to detail.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- ______________________________________________________________________________________  -->
+
+<!-- logos -->
+<section class="our-brands-section py-5">
+  <div class="container text-center">
+    <h2 class="brands-heading">Our Brands</h2>
+    <p class="brands-subtext">A glimpse at the premium car brands we offer</p>
+
+    <div class="brands-marquee">
+      <div class="brands-track">
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/audi.jpg' %}" alt="Audi"></div>
+          <div class="brand-name">Audi</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/bently.jpg' %}" alt="Brand 2"></div>
+          <div class="brand-name">Bently</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"> <img src="{% static 'images/logos/bmw.jpg' %}" alt="Brand 3"></div>
+          <div class="brand-name">BMW</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/bugatti.jpg' %}" alt="Brand 4"></div>
+          <div class="brand-name">Bugatti</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/ferrari.jpg' %}" alt="Brand 5"></div>
+          <div class="brand-name">Ferrari</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/jaguar.jpg' %}" alt="Brand 6"></div>
+          <div class="brand-name">Jaguar</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"> <img src="{% static 'images/logos/lamborghini.jpg' %}" alt="Brand 7"></div>
+          <div class="brand-name">Lamborghini</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/macerati.jpg' %}" alt="Brand 8"></div>
+          <div class="brand-name">Macerati</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/mercedes.jpg' %}" alt="Brand 9"></div>
+          <div class="brand-name">Mercedes</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"> <img src="{% static 'images/logos/rr.jpg' %}" alt="Brand 10"></div>
+          <div class="brand-name">Rolls Roys</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/tesla.jpg' %}" alt="Brand 11"></div>
+          <div class="brand-name">Tesla</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/lexus.jpg' %}" alt="Brand 12"></div>
+          <div class="brand-name">Lexus</div>
+        </div>
+        <div class="brand-logo">
+          <div class="brand-img-container"><img src="{% static 'images/logos/porsche.jpg' %}" alt="Brand 13"></div>
+          <div class="brand-name">Porsche</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ______________________________________________________________________________________  -->
+<!-- closure -->
+<section class="cta-luxury py-5 text-center">
+  <div class="container">
+    <h2 class="cta-title">Ready to Experience True Luxury?</h2>
+    <p class="cta-subtext"> Discover the elegance, performance, and prestige of our exclusive collection.
+      Your dream drive awaits you at <strong style="color: whitesmoke;">PrestigeLane</strong>.</p>
+    <a href="/contact/" class="btn btn-outline-light btn-lg mt-3">Get in Touch</a>
+  </div>
+</section>
+
+<!-- ______________________________________________________________________________________  -->
+<script>
+
+ const video = document.getElementById('bg-video');
+const skipSeconds = 5;
+
+video.muted = true;
+video.playsInline = true;
+
+// Try to play immediately
+video.play().then(() => {
+    // Only set currentTime after playback starts
+    if (video.duration > skipSeconds) {
+        video.currentTime = skipSeconds;
+    }
+}).catch(err => {
+    console.log("Autoplay blocked:", err);
+});
+
+// When video is ready to seek
+video.addEventListener("canplaythrough", () => {
+    if (video.currentTime < skipSeconds) {
+        video.currentTime = skipSeconds;
+    }
+});
+
+// Fade-in
+video.addEventListener("canplay", () => {
+    video.style.opacity = 1;
+});
+
+// Loop from skipSeconds (Chrome-safe)
+video.addEventListener("timeupdate", () => {
+    if (video.currentTime >= video.duration - 0.1) {
+        video.currentTime = skipSeconds;
+    }
+});
+
+
+
+  // _______________________________
+
+</script>
+
+{% endblock %}

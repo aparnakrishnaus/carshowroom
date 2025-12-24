@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  section {
+    margin-top: -80px;
+  }
+
+  section.py-5 {
+    background-color: #111;
+    color: #f5f5f5;
+    padding-top: 120px;
+    padding-bottom: 80px;
+  }
+
+  section.py-5 .container {
+    max-width: 1200px;
+  }
+
+  section.py-5 h2 {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    margin-top: 100px;
+    text-align: center;
+    color: var(--primary-color);
+    font-family: var(--main-font);
+  }
+
+  section.py-5 h2::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px;
+    margin: 12px auto 0;
+    background: linear-gradient(90deg, #bbb, #fff, #bbb);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .card {
+    background: #1a1a1a;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.4s, box-shadow 0.4s;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 6px;
+  }
+
+  .card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+  }
+
+  .card img {
+    width: 100%;
+    max-height: 140px;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: brightness(0.95);
+    margin-bottom: 10px;
+  }
+
+  .card:hover img {
+    transform: scale(1.03);
+    filter: brightness(1);
+  }
+
+  .card-body {
+    padding: 8px 10px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #fff;
+  }
+
+  .card h4 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-bottom: 8px;
+  }
+
+  .card .info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.7rem;
+    color: #bbb;
+  }
+
+  .card .info span {
+    display: flex;
+    align-items: center;
+  }
+
+  .card .info span i {
+    margin-right: 5px;
+    color: #bbb;
+  }
+
+  .card .btn {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    margin-top: 10px;
+    background-color: white;
+    color: black;
+    transition: all 0.3s ease;
+    border: none;
+    font-weight: 600;
+  }
+
+  .card .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+
+  h3 {
+    text-transform: capitalize;
+    font-family: var(--main-font);
+  }
+
+  @media (min-width: 992px) {
+    .col-md-4 {
+      flex: 0 0 25%;
+      max-width: 25%;
+      margin-bottom: 20px;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .col-md-4 {
+      flex: 0 0 45%;
+      max-width: 45%;
+      margin-bottom: 20px;
+    }
+  }
+
+
+  @media (max-width: 576px) {
+    .col-md-4 {
+      flex: 0 0 90%;
+      max-width: 90%;
+      margin: 0 auto 20px;
+    }
+  }
+
+
+  @media (max-width: 576px) {
+    .row {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-height: 70vh;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .card {
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 10px;
+    }
+
+    .card img {
+      max-height: 120px;
+    }
+
+    .row {
+      overflow-y: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .row::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>
+
+<section class="py-5 text-center">
+  <div class="container">
+    <h2 class="mb-4">Available Services</h2>
+
+    {% comment %} START: Grouped services loop {% endcomment %}
+    {% for category, services_list in grouped_services.items %}
+    <h3 class="text-start mt-5 mb-3">{{ category }}</h3>
+    <hr>
+    <div class="row">
+      {% for service in services_list %}
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+          {% if service.image %}
+          <img src="{{ service.image.url }}" alt="{{ service.name }}">
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h6>{{ service.name }}</h6>
+            <br>
+            <div class="info">
+              <span><i class="fa-solid fa-clock"></i> {{ service.duration }}</span>
+              <span><i class="fa-solid fa-indian-rupee-sign"></i>{{ service.price_min }} - {{ service.price_max}}</span>
+            </div>
+            <div class="info">
+              <span><i class="fa-solid fa-star"></i> {{ service.rating|default:"4.5" }}</span>
+            </div>
+            <a href="{% url 'service_detail' service.id %}" class="btn  btn-sm mt-auto">Learn More</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% comment %} END: Grouped services loop {% endcomment %}
+
+  </div>
+
+</section>
+
+
+{% endblock %}

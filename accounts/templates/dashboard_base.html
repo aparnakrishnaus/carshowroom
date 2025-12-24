@@ -1,0 +1,745 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin Dashboard{% endblock %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+  <style>
+    body {
+      margin: 0;
+      background: #121212;
+      color: #eee;
+      overflow-x: hidden;
+    }
+
+    h2 {
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    /* _______________________________________________________________ */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 260px;
+      background: #0d0d0f;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #2a2a2a;
+      overflow-y: auto;
+      transition: width 0.3s ease, left 0.3s ease;
+      z-index: 1050;
+    }
+
+    .sidebar .profile {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .sidebar .profile img {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border: 2px solid #2a2a2a;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar .profile h6 {
+      margin-top: 10px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .sidebar .profile p {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: #cfcfcf;
+      font-size: 15px;
+      margin-bottom: 6px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background: #1e1e20;
+      color: #fff;
+      border-left: 4px solid #fff;
+    }
+
+    .sidebar .bottom {
+      margin-top: auto;
+      border-top: 1px solid #2a2a2a;
+      padding-top: 15px;
+    }
+
+    /* _______________________________________________________________ */
+    .sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: #1c1c1c;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #444, #777);
+      border-radius: 10px;
+    }
+
+    /* _______________________________________________________________ */
+    .sidebar-collapsed {
+      width: 70px;
+    }
+
+    .sidebar-collapsed .profile h6,
+    .sidebar-collapsed .profile p,
+    .sidebar-collapsed .nav-link span {
+      display: none;
+    }
+
+    .sidebar-collapsed .profile img {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto;
+    }
+
+    .sidebar-collapsed .nav-link::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1c1c1c;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      color: #fff;
+      font-size: 0.85rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar-collapsed .nav-link:hover::after {
+      opacity: 1;
+    }
+
+    /* _______________________________________________________________ */
+    .main-content {
+      margin-left: 260px;
+      padding: 25px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content-collapsed {
+      margin-left: 70px;
+    }
+
+    /* _______________________________________________________________ */
+    #sidebarToggle {
+      background: transparent;
+      color: #fff;
+      border: unset;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 20px;
+      text-align: end;
+    }
+
+
+    /* _______________________________________________________________ */
+    .card {
+      background: rgba(28, 28, 28, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      color: rgb(225, 221, 221);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    /* _______________________________________________________________ */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #eee;
+    }
+
+    .table thead {
+      background: rgba(255, 255, 255, 0.05);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .table td,
+    .table th {
+      padding: 14px;
+      border: 1px solid #333;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    input,
+    select,
+    textarea {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    ::placeholder {
+      color: #818080;
+    }
+
+    .fa-solid {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #242424;
+      border: 1px solid #333;
+      color: #fff;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .fa-solid:hover {
+      background: #fdffff;
+      color: #000;
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1b1b1b;
+      padding: 12px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-header .back-arrow {
+      color: #ccc;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s;
+      text-decoration: none;
+    }
+
+    .page-header .back-arrow:hover {
+      color: #0d6efd;
+    }
+
+    .page-header h2 {
+      flex-grow: 1;
+      text-align: start;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+      margin: 0;
+    }
+
+    .page-header .icon-container {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .page-header h2 {
+        text-align: left;
+        font-size: 1.3rem;
+      }
+
+      .page-header .icon-btn {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* _______________________________________________________________ */
+    @media (max-width: 992px) {
+      .sidebar {
+        left: -260px;
+        z-index: 1050;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .main-content {
+        margin-left: 0 !important;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 1040;
+      }
+
+      .overlay.active {
+        display: block;
+        backdrop-filter: brightness(0.6);
+      }
+
+      .profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+      }
+
+      .profile img {
+        width: 70px;
+        height: 70px;
+      }
+
+      .profile h6 {
+        font-size: 1rem;
+        margin: 10px 0 2px;
+      }
+
+      .profile p {
+        font-size: 0.8rem;
+        color: #ccc;
+      }
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 99999;
+    }
+
+    .toast-msg {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      min-width: 250px;
+      color: #fff;
+      font-size: 0.95rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: toast-in 0.3s ease forwards, toast-out 0.5s ease 4s forwards;
+    }
+
+    .toast-success {
+      background: #28a745;
+    }
+
+    .toast-warning {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .toast-danger,
+    .toast-error {
+      background: #dc3545;
+    }
+
+    .toast-info {
+      background: #17a2b8;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes toast-out {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+
+    .badge-notification {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      line-height: 1;
+      border-radius: 8px;
+      background-color: #dc3545;
+      color: #fff;
+      vertical-align: middle;
+      display: inline-block;
+      transition: none;
+    }
+
+    .nav-link.active .badge-notification {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  {% if messages %}
+  <div class="toast-container">
+    {% for message in messages %}
+    <div class="toast-msg toast-{{ message.tags }}">
+      <i
+        class="fa-solid 
+      {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'warning' %}fa-triangle-exclamation
+      {% elif message.tags == 'danger' or message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-info{% endif %}">
+      </i>
+      <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+
+  <button id="mobileMenuBtn" class="btn btn-dark d-lg-none" 
+        style="position: fixed; top: 15px; left: 15px; z-index: 2000;">
+  <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+</button>
+
+
+  <!--  _______________________________________________________________  -->
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <button id="sidebarToggle" class="btn btn-outline-primary">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <div class="profile">
+      {% if user.profile.image %}
+      <img src="{{ user.profile.image.url }}" alt="Profile">
+      {% else %}
+      <img src="{% static 'images/default_admin.jpg' %}" alt="Profile">
+      {% endif %}
+      <h6>{{ user.get_full_name }}</h6>
+      <p>{{ user.email }}</p>
+    </div>
+
+    <ul class="nav flex-column">
+      <!-- Notifications -->
+      <li>
+        <a href="{% url 'admin_contact_messages' %}"
+          class="nav-link {% if request.path == '/dashboard/admin/contact-messages/' %}active{% endif %}">
+          <i class="bi bi-envelope"></i> <span>Notifications</span>
+          {% if unread_notifications_count > 0 %}
+          <span class="badge-notification">{{ unread_notifications_count }}</span>
+          {% endif %}
+        </a>
+      </li>
+
+      <!-- subscription -->
+      <li>
+  <a href="{% url 'subscribers_list' %}" 
+     class="nav-link {% if request.path == '/dashboard/admin/subscribers/' %}active{% endif %}">
+
+    <i class="bi bi-people"></i>
+    <span>Subscribers</span>
+
+    {% if subscribers_count > 0 %}
+      <span class="badge-notification">{{ subscribers_count }}</span>
+    {% endif %}
+  </a>
+</li>
+
+
+      <!-- Manage Bookings -->
+      <li>
+        <a href="{% url 'manage_bookings' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'manage_bookings' %}active{% endif %}"
+          data-tooltip="Manage Bookings">
+          <i class="bi bi-calendar-check"></i><span>Manage Bookings</span>
+          {% if new_booking_count > 0 %}
+          <span class="badge-notification">{{ new_booking_count }}</span>
+          {% endif %}
+        </a>
+      </li>
+
+   <!-- payments -->
+      <li>
+  <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+     href="#paymentsDropdown" role="button" aria-expanded="false" aria-controls="paymentsDropdown">
+    <span><i class="bi bi-credit-card"></i> Payments</span>
+    <i class="bi bi-caret-down-fill"></i>
+  </a>
+  
+  <div class="collapse" id="paymentsDropdown">
+    <ul class="nav flex-column ms-3">
+      
+      <li>
+        <a href="{% url 'manage_payments' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'manage_payments' %}active{% endif %}">
+          <i class="bi bi-wallet2"></i> Booked Payments
+          {% if new_payment_count > 0 %}
+          <span class="badge-notification">{{ new_payment_count }}</span>
+          {% endif %}
+        </a>
+      </li>
+      
+      <li>
+        <a href="{% url 'refund_applications' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'refund_applications' %}active{% endif %}">
+          <i class="bi bi-cash-stack"></i> Refund
+          {% if refund_count > 0 %}
+          <span class="badge-notification">{{ refund_count }}</span>
+          {% endif %}
+        </a>
+      </li>
+
+    </ul>
+  </div>
+</li>
+
+
+        <li>
+       <a href="{% url 'booked_spare_parts' %}"
+       class="nav-link {% if request.resolver_match.url_name == 'booked_spare_parts' %}active{% endif %}">
+        <i class="bi bi-box-seam"></i> 
+        <span>Booked Spare Parts</span>
+        {% if  booked_spare_parts_count > 0 %}
+        <span class="badge-notification">{{ booked_spare_parts_count }}</span> {% endif %}
+       </a>
+       </li>
+
+      
+      <li><a href="{% url 'manage_customers' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'manage_customers' %}active{% endif %}">
+          <i class="bi bi-person-lines-fill"></i><span>Manage Customers</span></a></li>
+
+
+          <!-- Manage Cars -->
+      <li>
+        <a href="{% url 'manage_cars' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'manage_cars' %}active{% endif %}"
+          data-tooltip="Manage Cars">
+          <i class="bi bi-car-front"></i><span>Cars</span>
+        </a>
+      </li>
+
+
+      <li><a href="{% url 'manage_services' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'manage_services' %}active{% endif %}">
+          <i class="bi bi-tools"></i><span>Services</span></a></li>
+
+      <li>
+        <a href="{% url 'manage_spare_parts' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'manage_spare_parts' %}active{% endif %}">
+         <i class="bi bi-wrench-adjustable-circle"></i><span>Spare Parts</span>
+        </a>
+      </li>
+
+      <li><a href="{% url 'reports' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+          <i class="bi bi-bar-chart-line"></i><span>Reports</span></a></li>
+
+      <li>
+        <a href="{% url 'removed_items' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'removed_items' %}active{% endif %}">
+          <i class="bi bi-trash-fill"></i> <span>Trash</span>
+          {% if total_trash > 0 %}
+          <span class="badge-notification">{{ total_trash }}</span>
+          {% endif %}
+        </a>
+      </li>
+
+
+      <!-- My Profile -->
+      <li>
+        <a href="{% url 'admin_profile' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'admin_profile' %}active{% endif %}"
+          data-tooltip="My Profile">
+          <i class="bi bi-person-circle"></i> <span>My Profile</span>
+        </a>
+      </li>
+
+      <!-- Settings Dropdown -->
+      <li>
+        <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+          href="#settingsDropdown" role="button" aria-expanded="false" aria-controls="settingsDropdown">
+          <span><i class="bi bi-gear"></i> Settings</span>
+          <i class="bi bi-caret-down-fill"></i>
+        </a>
+        <div class="collapse" id="settingsDropdown">
+          <ul class="nav flex-column ms-3">
+            <li>
+              <a href="{% url 'manage_users' role='staff' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'manage_users' and request.resolver_match.kwargs.role == 'staff' %}active{% endif %}">
+                <i class="bi bi-person-badge"></i> Manage Staff
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'manage_users' role='superuser' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'manage_users' and request.resolver_match.kwargs.role == 'superuser' %}active{% endif %}">
+                <i class="bi bi-person-gear"></i> Manage Admin
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay"></div>
+
+
+  <!-- Main Content -->
+  <div class="main-content">
+    {% block content %}{% endblock %}
+  </div>
+
+
+
+  <!--  _______________________________________________________________  -->
+
+  <!-- Scripts -->
+  <script>
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const overlay = document.querySelector('.overlay');
+
+    function toggleSidebar() {
+      if (window.innerWidth >= 992) {
+        // Desktop collapse
+        sidebar.classList.toggle('sidebar-collapsed');
+        mainContent.classList.toggle('main-content-collapsed');
+
+        const icon = toggleBtn.querySelector('i');
+        if (sidebar.classList.contains('sidebar-collapsed')) {
+          icon.classList.remove('bi-chevron-left');
+          icon.classList.add('bi-chevron-right');
+        } else {
+          icon.classList.remove('bi-chevron-right');
+          icon.classList.add('bi-chevron-left');
+        }
+      } else {
+        // Mobile slide sidebar
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : 'auto';
+      }
+    }
+
+    toggleBtn.addEventListener('click', toggleSidebar);
+
+    // Close sidebar on overlay click (mobile)
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    });
+
+    // Reset on resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 992) {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+      }
+    });
+
+
+    // msg
+    document.addEventListener("DOMContentLoaded", function () {
+      setTimeout(() => {
+        document.querySelectorAll(".toast-msg").forEach(toast => toast.remove());
+      }, 5000);
+    });
+
+
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+
+mobileMenuBtn.addEventListener("click", () => {
+  sidebar.classList.add('active');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+});
+  </script>
+
+  <!--  _______________________________________________________________  -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,169 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+  .profile-section {
+    max-width: 700px;
+    margin: 3rem auto;
+    background-color: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 2.5rem 3rem;
+    transition: all 0.3s ease;
+  }
+
+  .profile-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .profile-header h2 {
+    font-size: 1.8rem;
+    color: #111;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .profile-info {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  .profile-info p {
+    font-size: 1rem;
+    margin: 0;
+    color: #333;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .profile-info strong {
+    color: #111;
+    min-width: 130px;
+  }
+
+  .profile-info span {
+    color: #555;
+  }
+
+  .btn-group {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-main {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .btn-back {
+    background-color: #e0e0e0;
+    color: #000;
+    border: 1px solid #c2c2c2;
+  }
+
+  .btn-back:hover {
+    background-color: #d0d0d0;
+    color: black !important;
+  }
+
+  .btn-bookings {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #111;
+  }
+
+  .btn-bookings:hover {
+    background-color: #333;
+    border-color: #333;
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .profile-section {
+      margin: 2rem 1rem;
+      padding: 2rem;
+    }
+
+    .profile-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .profile-info p {
+      font-size: 0.95rem;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .profile-info strong {
+      font-size: 0.95rem;
+    }
+
+    .btn-main {
+      font-size: 0.9rem;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .profile-section {
+      padding: 1.5rem;
+      border-radius: 10px;
+    }
+
+    .profile-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .btn-group {
+      flex-direction: column;
+    }
+
+    .btn-main {
+      width: 100%;
+      padding: 0.8rem;
+    }
+  }
+</style>
+
+ <div class="page-header mt-5">
+        <h2>Customer Profile</h2>
+         {% include "accounts/_top_icons.html" %}
+        <a href="{% url 'admin_dashboard' %}" title="Back to Dashboard"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+
+     <div class="divider bg-secondary mb-3" style="height:2px;"></div>
+
+<div class="profile-section mt-5">
+  <div class="profile-header">
+    <h2>{{ customer.username }}'s Profile</h2>
+  </div>
+
+  <div class="profile-info">
+    <p><strong>Full Name:</strong> <span>{{ customer.get_full_name|default:customer.username }}</span></p>
+    <p><strong>Email:</strong> <span>{{ customer.email }}</span></p>
+    <p><strong>Role:</strong> <span>{{ customer.role|title }}</span></p>
+    <p><strong>Joined On:</strong> <span>{{ customer.date_joined|date:"M d, Y" }}</span></p>
+  </div>
+
+  <div class="btn-group">
+    <a href="{% url 'manage_customers' %}" class="btn-main btn-back">← Back</a>
+    <a href="{% url 'customer_bookings' customer.id %}" class="btn-main btn-bookings">View Bookings</a>
+  </div>
+</div>
+
+{% endblock %}

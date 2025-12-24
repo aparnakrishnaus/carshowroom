@@ -1,0 +1,289 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+  body {
+    background-color: #121212;
+    color: #ececec;
+  }
+
+  h2,
+  h4 {
+    color: #fff;
+    margin: 20px 0 10px;
+  }
+
+  .divider {
+    background-color: #333;
+    height: 2px;
+    margin-bottom: 15px;
+    border-radius: 2px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  thead th {
+    background-color: #2c2c2c;
+    color: #fff;
+    padding: 12px 14px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  tbody {
+    background-color: #f8f9fa;
+    color: #000;
+  }
+
+  tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  tbody tr:hover {
+    background-color: #eeeeee;
+  }
+
+  .amount {
+    color: #28a745;
+    font-weight: 700;
+  }
+
+  .empty-message {
+    text-align: center;
+    font-style: italic;
+    padding: 15px 0;
+    color: #666;
+  }
+
+  .btn-refund {
+    padding: 6px 12px;
+    background-color: #198754;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-refund:hover {
+    background-color: #157347;
+  }
+
+  .toggle-container {
+    margin: 20px 0;
+    text-align: start;
+  }
+
+  .toggle-btn {
+    padding: 8px 10px;
+    background: #444;
+    color: #fff;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    margin:auto;
+  }
+
+  .toggle-btn.active {
+    background: #198754;
+  }
+
+  .delete-btn {
+    padding: 6px 12px;
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+  }
+
+  .delete-btn:hover {
+    background-color: #b02a37;
+  }
+
+  .refund-btn {
+    padding: 6px 12px;
+    background-color: #ffc107;
+    color: #000;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .refund-btn:hover {
+    background-color: #e0a800;
+  }
+
+  .table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+table th, table td {
+  white-space: nowrap;
+}
+</style>
+
+
+
+ <div class="page-header mt-5">
+        <h2>Refund Applications</h2>
+        {% include "accounts/_top_icons.html" %}
+           <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+
+    <div class="divider"></div>
+
+<!-- Toggle Buttons -->
+<div class="toggle-container">
+  <button class="toggle-btn active" onclick="showTable('bookings')" id="btnBookings">Bookings</button>
+  <button class="toggle-btn" onclick="showTable('spares')" id="btnSpares">Spare Parts</button>
+</div>
+
+<div class="table-responsive">
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>car/Service</th>
+      <th>Amount</th>
+      <th>Cancel Reason</th> 
+      <th>Date</th>
+      <th>Action</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+
+  <!-- BOOKINGS TABLE BODY -->
+  <tbody id="bookingsTable">
+    {% if refund_bookings %}
+    {% for booking in refund_bookings %}
+    <tr>
+      <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
+
+      <td>
+    {% if booking.car %}
+        {{ booking.car.name }}
+    {% elif booking.service %}
+        {{ booking.service.name }}
+    {% else %}
+        N/A
+    {% endif %}
+</td>
+
+      <td class="amount">₹{{ booking.advance_payment }}</td>
+
+      <td>{{ booking.cancel_reason|default:"-" }}</td>
+
+      <td>{{ booking.created_at|date:"M d, Y" }}</td>
+
+      <td>
+        {% if booking.status == "Refunded" %}
+        <span class="text-success fw-bold">Refunded</span>
+        {% else %}
+        <form action="{% url 'process_refund_booking' booking.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="refund-btn">Refund</button>
+        </form>
+        {% endif %}
+      </td>
+
+      <td>
+        <form action="{% url 'delete_refund_booking' booking.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="delete-btn" onclick="return confirm('Move this booking to trash?');">
+            Delete
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+      <td colspan="8" class="empty-message">No booking refunds.</td>
+    </tr>
+    {% endif %}
+  </tbody>
+
+  <!-- SPARES TABLE BODY -->
+  <tbody id="sparesTable" style="display: none;">
+    {% if refund_spares %}
+    {% for spare in refund_spares %}
+    <tr>
+      <td>{{ spare.user.get_full_name|default:spare.user.username|default:"Guest" }}</td>
+      <td>{{ spare.part.name }}</td>
+      <td class="amount">₹{{ spare.amount }}</td>
+      <td>{{ spare.cancel_reason|default:"-" }}</td>
+      <td>{{ spare.created_at|date:"M d, Y" }}</td>
+
+      <td>
+        {% if spare.status == "Refunded" %}
+        <span class="text-success fw-bold">Refunded</span>
+        {% else %}
+        <form action="{% url 'process_refund_spare' spare.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="refund-btn">Refund</button>
+        </form>
+        {% endif %}
+      </td>
+
+      <td>
+        <form action="{% url 'delete_refund_spare' spare.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="delete-btn" onclick="return confirm('Move this spare refund entry to trash?');">
+            Delete
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+      <td colspan="8" class="empty-message">No spare refund requests.</td>
+    </tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>
+
+
+
+
+<script>
+  function showTable(type) {
+    const bookings = document.getElementById("bookingsTable");
+    const spares = document.getElementById("sparesTable");
+    const btnBookings = document.getElementById("btnBookings");
+    const btnSpares = document.getElementById("btnSpares");
+
+    if (type === "bookings") {
+      bookings.style.display = "";
+      spares.style.display = "none";
+      btnBookings.classList.add("active");
+      btnSpares.classList.remove("active");
+    } else {
+      bookings.style.display = "none";
+      spares.style.display = "";
+      btnBookings.classList.remove("active");
+      btnSpares.classList.add("active");
+    }
+  }
+</script>
+
+{% endblock %}

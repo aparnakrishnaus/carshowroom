@@ -1,0 +1,158 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+    .divider {
+        background-color: #333;
+        height: 2px;
+        margin-bottom: 15px;
+        border-radius: 2px;
+    }
+
+.edit-form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+
+.edit-form-container label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.edit-form-container input[type="text"],
+.edit-form-container input[type="number"],
+.edit-form-container select,
+.edit-form-container textarea {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+
+.edit-form-container input[type="text"]:focus,
+.edit-form-container input[type="number"]:focus,
+.edit-form-container select:focus,
+.edit-form-container textarea:focus {
+    border-color: #28a745;
+    outline: none;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+}
+
+.edit-form-container textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.edit-form-container .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-form-container .btn-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.edit-form-container .btn-success:hover {
+    background-color: #218838;
+}
+
+.edit-form-container .btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.edit-form-container .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+@media (max-width: 576px) {
+    .edit-form-container {
+        padding: 20px;
+        margin: 10px;
+    }
+}
+</style>
+
+<div class="container py-3">
+    <div class="page-header d-flex align-items-center justify-content-between">
+        <h2>Edit Spare Part</h2>
+           <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="edit-form-container">
+    <form method="POST">
+        {% csrf_token %}
+        <label>Name</label>
+        <input type="text" name="name" value="{{ part.name }}" required>
+
+        <label>Category</label>
+        <select name="category" required>
+            {% for value, label in categories %}
+            <option value="{{ value }}" {% if part.category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Price</label>
+        <input type="number" name="price" step="0.01" value="{{ part.price }}" required>
+
+        <label>Stock</label>
+        <input type="number" name="stock" value="{{ part.stock }}" required>
+
+        <label>Description</label>
+        <textarea name="description">{{ part.description }}</textarea>
+
+
+        <div class="checkbox-group">
+            <input type="checkbox" name="available" {% if part.available %}checked{% endif %} class="mb-0">
+            <label for="available" >Available</label>
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Update Spare Part</button>
+            <a href="{% url 'manage_spare_parts' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,418 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | PrestigeLane</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+  <style>
+    body {
+      background-color: #000;
+      color: #f5f5f5;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      padding: 40px;
+    }
+
+    .login-left {
+      width: 350px;
+      height: 350px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      margin: auto;
+      padding-left: 40px;
+    }
+
+    .login-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8);
+      border-radius: 15px;
+    }
+
+    .login-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-box {
+      background: rgba(192, 192, 192, 0.15);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 40px 35px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.1);
+    }
+
+    .login-box h2 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .login-group {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .login-group i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 16px;
+      pointer-events: auto;
+    }
+
+    .login-group input {
+      width: calc(100% - 20px);
+      padding: 10px 10px 10px 25px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.4s ease;
+      box-sizing: border-box;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .login-group input:focus {
+      border-color: rgb(255, 254, 254);
+      text-shadow: 0 0 8px rgba(192, 192, 192, 0.5);
+    }
+
+    .login-group label {
+      position: absolute;
+      top: 10px;
+      left: 35px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .login-group input:focus+label,
+    .login-group input:not(:placeholder-shown)+label {
+      top: -10px;
+      font-size: 12px;
+      color: #bbb;
+    }
+
+    .login-box button {
+      width: 100%;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 25px;
+      color: #000;
+      font-weight: 600;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 10px;
+    }
+
+    .login-box button:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .forgot-btn {
+      display: inline-block;
+      border: 1px solid #888;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: 0.3s;
+      margin-top: 10px;
+      text-align: center;
+      padding: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      width:95%;
+    }
+
+    .forgot-btn:hover {
+      transform: translateY(-3px);
+    }
+
+
+    .login-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .login-links a {
+      color: #ccc;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .login-links a:hover {
+      color: #fff;
+    }
+
+    .password-group {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      pointer-events: auto;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    .toggle-password i {
+      pointer-events: auto;
+    }
+
+    .toggle-password:hover {
+      color: silver;
+    }
+
+    input::-ms-reveal,
+    input::-ms-clear {
+      display: none;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-text-fill-color: #fff;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    input:-moz-autofill {
+      box-shadow: 0 0 0px 1000px rgba(192, 192, 192, 0.15) inset;
+      -moz-text-fill-color: #fff;
+    }
+
+    @media (max-width: 992px) {
+      .login-container {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .login-left {
+        display: none;
+      }
+
+      .login-right {
+        flex: none;
+        width: 100%;
+      }
+    }
+    
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 99999;
+    }
+
+    .toast-msg {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      min-width: 240px;
+      font-size: 0.9rem;
+      color: #000;
+      background: #e0e0e0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: toast-in 0.3s ease forwards, toast-out 0.5s ease 4s forwards;
+      border-left: 4px solid #eee9e9;
+    }
+
+    .toast-success {
+      background: #f5f5f5;
+      color: #000;
+      border-left-color: #a0a0a0;
+    }
+
+    .toast-warning {
+      background: #fafafa;
+      color: #000;
+      border-left-color: #c0c0c0;
+    }
+
+    .toast-danger,
+    .toast-error {
+      background: #dcdcdc;
+      color: #000;
+      border-left-color: #999;
+    }
+
+    .toast-info {
+      background: #eeeeee;
+      color: #000;
+      border-left-color: #bbb;
+    }
+
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes toast-out {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  {% if messages %}
+  <div class="toast-container">
+    {% for message in messages %}
+    <div class="toast-msg toast-{{ message.tags }}">
+      <i
+        class="fa-solid 
+      {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'warning' %}fa-triangle-exclamation
+      {% elif message.tags == 'danger' or message.tags == 'error' %}fa-circle-xmark{% else %}fa-circle-info{% endif %}">
+      </i>
+      <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="login-container">
+
+    <!-- Left Section: Cube -->
+    <div class="login-left">
+
+      <video autoplay muted loop playsinline disablepictureinpicture
+        controlslist="nodownload nofullscreen noremoteplayback" class="login-video">
+        <source src="{% static 'videos/profile-video.mp4' %}" type="video/mp4">
+      </video>
+
+    </div>
+
+
+    <!-- Right Section: Login Form -->
+    <div class="login-right">
+      <div class="login-box">
+        <h2>Login</h2>
+        <form method="post" novalidate class="login-form">
+          {% csrf_token %}
+
+          <div class="login-group">
+            <i class="fas fa-user"></i>
+            <input type="text" name="username" placeholder=" " required autocomplete="off">
+            <label>Username</label>
+          </div>
+
+          <div class="login-group password-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" id="password" placeholder=" " required autocomplete="new-password">
+            <label for="password">Password</label>
+            <span class="toggle-password"><i class="fas fa-eye"></i></span>
+          </div>
+
+
+          <button type="submit">Login</button>
+
+          <a href="{% url 'password_reset' %}" class="forgot-btn">Forgot Password?</a>
+
+        </form>
+
+        <div class="login-links">
+          <a href="{% url 'register' %}">Don't have an account? <span
+              style="color: rgb(135, 136, 222);">Register</span></a> |
+          <a href="{% url 'home' %}" style="color: rgb(205, 46, 46);">Quit</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const togglePassword = document.querySelector(".toggle-password");
+      const passwordInput = document.querySelector("#password");
+
+      if (!togglePassword || !passwordInput) return;
+
+      togglePassword.addEventListener("click", function () {
+        // Toggle input type
+        passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+
+        // Toggle eye icon
+        const icon = togglePassword.querySelector("i");
+        if (icon.classList.contains("fa-eye")) {
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
+        }
+      });
+    });
+  </script>
+
+
+
+
+</body>
+
+</html>

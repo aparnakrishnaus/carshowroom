@@ -1,0 +1,553 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  body {
+    background-color: #121212;
+    color: #f1f1f1;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .page-header h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .page-header a {
+    color: #0d6efd;
+    font-size: 1.3rem;
+    transition: 0.3s;
+  }
+
+  .profile-form-wrapper .card {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    max-width: 500px;
+    margin: auto;
+  }
+
+  .profile-form-wrapper label {
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  .profile-form-wrapper input {
+    background-color: #2a2a2a !important;
+    color: #fff !important;
+    border: 1px solid #444 !important;
+    border-radius: 6px;
+  }
+
+  .profile-form-wrapper input:focus {
+    border-color: #0d6efd !important;
+    box-shadow: none !important;
+  }
+
+  .profile-form-wrapper button.btn-primary {
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .profile-form-wrapper .btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  .profile-form-wrapper .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: white;
+  }
+
+  .stat-card,
+  .action-card {
+    border-radius: 15px;
+    background-color: #1e1e1e;
+    border: 1px solid #2c2c2c;
+    transition: all 0.3s ease;
+    color: #fff;
+  }
+
+  .stat-card:hover,
+  .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(13, 110, 253, 0.3);
+  }
+
+  .stat-card h5,
+  .action-card h5 {
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  .stat-card h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+
+  .divider {
+    border-radius: 5px;
+    opacity: 0.8;
+  }
+
+  .btn {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+  }
+
+  .btn-primary {
+    background-color: #0d6efd;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #0b5ed7;
+  }
+
+  .bi {
+    transition: transform 0.3s;
+  }
+
+  .card:hover .bi {
+    transform: scale(1.1);
+  }
+
+
+  @media (max-width: 768px) {
+    .page-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .stat-card,
+    .action-card {
+      margin-bottom: 15px;
+    }
+  }
+
+  .table {
+    color: #eaeaea;
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+
+  .table thead {
+    background: linear-gradient(90deg, #222, #2d2d2d);
+  }
+
+  .table th {
+    color: #bbb;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+    white-space: nowrap;
+  }
+
+  .table td {
+    padding: 6px 10px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #2a2a2a;
+    transition: 0.2s ease-in-out;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 5px 8px;
+    border-radius: 5px;
+  }
+
+  .btn-light {
+    background: #f1f1f1;
+    color: #111;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 5px 10px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-light:hover {
+    background: #e1e1e1;
+  }
+
+  .row.mt-4 {
+    margin-top: 1.2rem !important;
+  }
+
+  @media (max-width: 768px) {
+
+    .table th,
+    .table td {
+      font-size: 0.75rem;
+      padding: 5px 8px;
+    }
+
+    .btn-light {
+      font-size: 0.7rem;
+      padding: 4px 8px;
+    }
+
+    h5 {
+      font-size: 1rem;
+    }
+  }
+
+  .icon-group {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .icon-btn {
+    position: relative;
+    color: #fff;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .icon-btn:hover {
+    color: #ffc107;
+    box-shadow: none !important;
+  }
+
+  .icon-btn .badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: red;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 50%;
+  }
+
+  .main-icon {
+    background-color: transparent;
+    border: none;
+  }
+
+  .main-icon:hover {
+    background-color: transparent;
+    color: white;
+    box-shadow: none;
+  }
+
+  .settings-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .settings-menu {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    background: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 8px;
+    min-width: 160px;
+    display: none;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .settings-menu a {
+    display: block;
+    padding: 10px 14px;
+    color: #ddd;
+    font-size: 0.85rem;
+    text-decoration: none;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  .settings-menu a:last-child {
+    border-bottom: none;
+  }
+
+  .settings-menu a:hover {
+    background-color: #2d2d2d;
+    color: #fff;
+  }
+
+  .settings-dropdown:hover .settings-menu {
+    display: block;
+  }
+
+  .main-row{
+    margin-left: 0;
+  }
+
+</style>
+
+<div class="row main-row mt-3">
+  <div class="col-md-10 col-lg-11 p-4">
+
+    {% if show_profile %}
+    <!-- PROFILE SECTION -->
+    <div class="page-header mt-5">
+      <h2>My Profile</h2>
+      {% include "accounts/_top_icons.html" %}
+      <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+    <div class="divider bg-secondary mb-4" style="height:2px;"></div>
+
+    <div class="profile-form-wrapper">
+      <div class="card p-4 shadow-lg text-light">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="text-center mb-3">
+            {% if user.profile.image %}
+            <img id="profile-preview" src="{{ user.profile.image.url }}" class="rounded-circle shadow-sm mb-3"
+              width="120" height="120" style="object-fit: cover;">
+            {% else %}
+            <img id="profile-preview" src="{% static 'images/default_profile.png' %}"
+              class="rounded-circle shadow-sm mb-3" width="120" height="120" style="object-fit: cover;">
+            {% endif %}
+          </div>
+
+          <!-- Hidden file input -->
+          <input type="file" id="id_image" name="image" accept="image/*" style="display: none;">
+
+          <div class="text-center mb-3">
+            <button type="button" class="btn btn-outline-primary btn-sm"
+              onclick="document.getElementById('id_image').click();">
+              <i class="bi bi-camera"></i> Choose New Photo
+            </button>
+          </div>
+
+          <div class="mb-3">
+            <label for="id_first_name" class="form-label">First Name</label>
+            {{ user_form.first_name }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_last_name" class="form-label">Last Name</label>
+            {{ user_form.last_name }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_email" class="form-label">Email</label>
+            {{ user_form.email }}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- DASHBOARD SECTION -->
+    <div class="header-container"
+      style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+      <h2 class="mb-0">Admin Dashboard</h2>
+
+      <div class="icon-group" style="display: flex; gap: 15px; align-items: center;">
+        <a href="{% url 'admin_contact_messages' %}" class="icon-btn" title="Notifications">
+          <i class="fa-solid fa-bell main-icon"></i>
+          <span class="badge" id="notification-count">{{ messages_count }}</span>
+        </a>
+        <div class="settings-dropdown">
+          <a class="icon-btn" title="Settings">
+            <i class="fa-solid fa-gear main-icon"></i>
+          </a>
+
+          <div class="settings-menu">
+            <a href="{% url 'admin_change_password' %}">Change Password</a>
+            <a href="{% url 'logout' %}">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="divider bg-secondary mb-4" style="height:2px;"></div>
+
+    <!-- KPI CARDS -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="card stat-card shadow-sm text-center h-100 p-3">
+          <i class="bi bi-car-front fs-1 text-primary"></i>
+          <h5 class="mt-2">Total Cars</h5><br>
+          <hr>
+          <h3>{{ total_cars }}</h3>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card shadow-sm text-center h-100 p-3">
+          <i class="bi bi-bag-check fs-1 text-success"></i>
+          <h5 class="mt-2">Cars Sold</h5><br>
+          <hr>
+          <h3>{{ cars_sold }}</h3>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card shadow-sm text-center h-100 p-3">
+          <i class="bi bi-calendar-check fs-1 text-warning"></i>
+          <h5 class="mt-2 mb-4">Pending Bookings</h5>
+          <hr class="mt-4">
+          <h3 class="mt-3">{{ pending_bookings }}</h3>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card stat-card shadow-sm text-center h-100 p-3">
+          <i class="bi bi-people fs-1 text-info"></i>
+          <h5 class="mt-2">Total Staff</h5><br>
+          <hr>
+          <h3>{{ total_staff }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN ACTION CARDS -->
+    <div class="row g-4 mt-3 mb-4">
+      <div class="col-md-4">
+        <div class="card action-card shadow-sm text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-car-front fs-1 text-primary"></i>
+            <h5 class="card-title mt-3">Manage Cars</h5>
+            <a href="{% url 'manage_cars' %}" class="btn btn-primary mt-2">Go</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card action-card shadow-sm text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-people fs-1 text-success"></i>
+            <h5 class="card-title mt-3">Manage Staffs</h5>
+            <a href="{% url 'manage_users' role='staff' %}" class="btn btn-success mt-2">Go</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card action-card shadow-sm text-center h-100">
+          <div class="card-body">
+            <i class="bi bi-person-gear fs-1 text-warning"></i>
+            <h5 class="card-title mt-3">Manage Admins</h5>
+            <a href="{% url 'manage_users' role='superuser' %}" class="btn btn-warning mt-2">Go</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGE BOOKINGS CARD -->
+    <div class="col-md-4">
+      <div class="card action-card shadow-sm text-center h-100">
+        <div class="card-body">
+          <i class="bi bi-calendar-check fs-1 text-danger"></i>
+          <h5 class="card-title mt-3">Manage Bookings</h5>
+          <a href="{% url 'manage_bookings' %}" class="btn btn-danger mt-2">Go</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider bg-secondary mb-4 mt-4" style="height:2px;"></div>
+
+    <!-- RECENT BOOKINGS TABLE -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5>Today's Bookings</h5>
+          <div>
+            <a href="{% url 'manage_bookings' %}" class="btn btn-sm btn-light me-2 mb-4">View All Bookings</a>
+          </div>
+        </div>
+
+        <div class="card p-3 shadow-sm">
+          <div class="table-responsive mt-3">
+            <table class="table table-dark table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Booked On</th>
+                  <th>Car Model</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for booking in todays_bookings %}
+                <tr>
+                  <td>
+                    {% if booking.user.first_name or booking.user.last_name %}
+                    {{ booking.user.first_name }} {{ booking.user.last_name }}
+                    {% else %}
+                    {{booking.user.username}}
+                    {% endif %}
+                  </td>
+                  <td>{{ booking.created_at|date:"d M Y H:i A" }}</td>
+                  <td>
+                    {% if booking.car %}
+                    {{ booking.car.name }}
+                    {% elif booking.service %}
+                    {{ booking.service.name }}
+                    {% else %}
+                    {{ booking.name }}
+                    {% endif %}
+                  </td>
+                  <td>{{ booking.booking_type|title }}</td>
+                  <td>
+                    {{ booking.date|date:"d M Y" }} -
+                    {% if booking.time %}
+                    {{ booking.time|time:"h:i A" }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if booking.status == 'Pending' %}
+                    <span class="badge bg-warning text-dark">{{ booking.status }}</span>
+                    {% elif booking.status == 'Approved' %}
+                    <span class="badge bg-success">{{ booking.status }}</span>
+                    {% else %}
+                    <span class="badge bg-secondary">{{ booking.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center">No bookings for today</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    {% endif %}
+  </div>
+</div>
+
+
+<script>
+  document.getElementById('id_image').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById('profile-preview').src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
+{% endblock %}

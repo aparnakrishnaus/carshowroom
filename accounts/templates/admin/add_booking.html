@@ -1,0 +1,263 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+    /* Same styling as Add Payment for consistency */
+    .container {
+        max-width: 700px;
+        background: #1c1c1c;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 30px;
+        color: #fff;
+    }
+
+    .divider {
+        height: 2px;
+        background: #333;
+        margin-bottom: 20px;
+        border-radius: 2px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #ccc;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: #222;
+        color: #fff;
+        border: 1px solid #555;
+        margin-bottom: 15px;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #6610f2;
+    }
+
+    .btn-success,
+    .btn-secondary {
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-weight: 500;
+        margin-right: 5px;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: #fff;
+        border: none;
+    }
+
+    option {
+        color: black !important;
+    }
+
+    .autocomplete-suggestions {
+        border: 1px solid #555;
+        background: #2c2c2c;
+        color: #fff;
+        display: none;
+        position: absolute;
+        z-index: 9999;
+        border-radius: 6px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .autocomplete-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .autocomplete-item:hover {
+        background: #444;
+    }
+</style>
+
+<div class="container">
+    <h3>Add Booking</h3>
+    <div class="divider"></div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Customer Name -->
+        <div class="mb-3">
+            <label>Customer Name</label>
+            <input type="text" id="customerSearch" class="form-control" placeholder="Type customer name...">
+            <input type="hidden" name="user" id="customerId">
+            <div id="customerSuggestions" class="autocomplete-suggestions"></div>
+        </div>
+
+        <div class="mb-3">
+            <label>Phone</label>
+            <input type="text" name="phone" class="form-control">
+        </div>
+
+        <!-- Booking Type -->
+        <div class="mb-3">
+            <label>Booking Type</label>
+            <select name="booking_type" id="booking_type" class="form-control" required>
+                <option value="">-- Select Booking Type --</option>
+                <option value="book">Car Booking</option>
+                <option value="test_drive">Test Drive</option>
+                <option value="service">Service Booking</option>
+            </select>
+        </div>
+
+        <!-- Car -->
+        <div class="mb-3" id="car-selection" style="display:none;">
+            <label>Select Car</label>
+            <select name="car-select" id="car_select" class="form-control">
+                <option value="">-- Select Car --</option>
+                {% for car in cars %}
+                <option value="{{ car.id }}" data-price="{{ car.price }}">{{ car.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Service -->
+        <div class="mb-3" id="service-selection" style="display:none;">
+            <label>Select Service</label>
+            <select name="service_select" id="service_select" class="form-control">
+                <option value="">-- Select Service --</option>
+                {% for service in services %}
+                <option value="{{ service.id }}" data-min="{{ service.price_min|default:0 }}"
+                    data-max="{{ service.price_max|default:0 }}">
+                    {{ service.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Service Price -->
+        <div class="mb-3" id="service-price-selection" style="display:none;">
+            <label>Select Price</label>
+            <select name="service_price" id="service_price" class="form-control">
+                <option value="">-- Select Price --</option>
+            </select>
+        </div>
+
+        <!-- Date & Time -->
+        <div class="mb-3">
+            <label>Date</label>
+            <input type="date" name="date" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Time</label>
+            <input type="time" name="time" class="form-control" required>
+        </div>
+
+        <!-- Amounts -->
+         <div class="mb-3">
+            <label>Total Amount</label>
+            <input type="number" step="0.01" name="total_amount" id="total_amount" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label>Advance Payment</label>
+            <input type="number" step="0.01" name="advance" id="advance" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label>Balance</label>
+            <input type="number" step="0.01" name="balance" id="balance" class="form-control" readonly>
+        </div>
+
+        <button type="submit" class="btn btn-success">Add Booking</button>
+        <a href="{% url 'manage_bookings' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    // Autocomplete for customer
+    const input = document.getElementById("customerSearch");
+    const list = document.getElementById("customerSuggestions");
+    const hiddenField = document.getElementById("customerId");
+
+    input.addEventListener("input", function () {
+        const q = this.value.trim();
+        if (q.length < 1) { list.style.display = "none"; return; }
+
+        fetch(`/customer-autocomplete/?q=${q}`)
+            .then(res => res.json())
+            .then(data => {
+                list.innerHTML = ""; list.style.display = "block";
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.classList.add("autocomplete-item");
+                    div.textContent = item.name;
+                    div.addEventListener("click", () => { input.value = item.name; hiddenField.value = item.id; list.style.display = "none"; });
+                    list.appendChild(div);
+                });
+            });
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!input.contains(e.target) && !list.contains(e.target)) { list.style.display = "none"; }
+    });
+
+    // Booking type & amounts calculation
+    const bookingType = document.getElementById('booking_type');
+    const carSelection = document.getElementById('car-selection');
+    const serviceSelection = document.getElementById('service-selection');
+    const servicePriceSelection = document.getElementById('service-price-selection');
+    const carSelect = document.getElementById('car_select');
+    const serviceSelect = document.getElementById('service_select');
+    const servicePriceSelect = document.getElementById('service_price');
+    const totalPrice = document.getElementById('total_amount');
+    const advanceInput = document.getElementById('advance');
+    const balanceInput = document.getElementById('balance');
+
+    function updateForm() {
+        const type = bookingType.value;
+        carSelection.style.display = (type === 'book' || type === 'test') ? 'block' : 'none';
+        serviceSelection.style.display = (type === 'service') ? 'block' : 'none';
+        servicePriceSelection.style.display = (type === 'service') ? 'block' : 'none';
+        calculateAmounts();
+    }
+
+    function calculateAmounts() {
+        let total = 0, advance = 0;
+        const type = bookingType.value;
+        if ((type === 'book' || type === 'test') && carSelect.value) {
+            total = parseFloat(carSelect.selectedOptions[0].dataset.price || 0);
+            advance = (type === 'book') ? total * 0.001 : 0;
+        } else if (type === 'service' && servicePriceSelect.value) {
+            total = parseFloat(servicePriceSelect.value || 0);
+            advance = total * 0.10;
+        }
+        totalPrice.value = total.toFixed(2);
+        advanceInput.value = advance.toFixed(2);
+        balanceInput.value = (total - advance).toFixed(2);
+    }
+
+    serviceSelect.addEventListener('change', () => {
+        servicePriceSelect.innerHTML = '<option value="">-- Select Price --</option>';
+        const selected = serviceSelect.selectedOptions[0];
+        if (!selected) return;
+        if (selected.dataset.min) servicePriceSelect.innerHTML += `<option value="${selected.dataset.min}">Min: ₹${selected.dataset.min}</option>`;
+        if (selected.dataset.max) servicePriceSelect.innerHTML += `<option value="${selected.dataset.max}">Max: ₹${selected.dataset.max}</option>`;
+        calculateAmounts();
+    });
+
+    bookingType.addEventListener('change', updateForm);
+    carSelect.addEventListener('change', calculateAmounts);
+    servicePriceSelect.addEventListener('change', calculateAmounts);
+
+    window.addEventListener('DOMContentLoaded', updateForm);
+
+</script>
+
+{% endblock %}

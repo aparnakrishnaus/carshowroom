@@ -1,0 +1,81 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+    .container {
+        max-width: 600px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 30px;
+        border-radius: 20px;
+        margin-top: 50px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #5aa9ff;
+        box-shadow: 0 0 5px rgba(90, 169, 255, 0.8);
+        color: #fff;
+    }
+
+  
+    .btn-primary {
+        background: linear-gradient(135deg, #377dff, #8254ff);
+        border: none;
+        padding: 10px 22px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.25s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #2f6ae0, #6b45d0);
+        transform: translateY(-2px);
+    }
+</style>
+
+
+
+<div class="page-header">
+    <h2 class="mb-4">Edit {{ role|title }}</h2>
+    <a href="{% url 'manage_users' role=role %}"><i class="fa-solid fa-arrow-left"></i></a>
+</div>
+
+<div class="divider bg-secondary mb-4" style="height:2px;"></div>
+
+<div class="container mt-5">
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Username</label>
+            <input type="text" name="username" value="{{ user_obj.username }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ user_obj.email }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>New Password (leave blank to keep current)</label>
+            <input type="password" name="password" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Update {{ role|title }}</button>
+    </form>
+</div>
+{% endblock %}

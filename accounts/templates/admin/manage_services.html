@@ -1,0 +1,180 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+    .divider {
+        background-color: #333;
+        height: 2px;
+        margin-bottom: 15px;
+        border-radius: 2px;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .table {
+        width: 100%;
+        min-width: 700px;
+        border-collapse: collapse;
+        background-color: #1e1e1e;
+        color: #f1f1f1;
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px 10px;
+        text-align: left;
+        border-bottom: 1px solid #2e2e2e;
+        white-space: nowrap;
+    }
+
+    .table th {
+        background-color: #2c2c2c !important;
+        font-weight: 500;
+        color: #fff;
+    }
+
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    #search-input {
+        background-color: #222;
+        border: 1px solid #333;
+        color: #f5f5f5;
+        border-radius: 6px;
+        padding: 8px 12px;
+    }
+
+    #search-input::placeholder {
+        color: #999;
+    }
+
+    .btn-secondary {
+        background-color: #333;
+        border: none;
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #555;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background-color: #3cd658;
+    }
+</style>
+
+
+<div class="container py-3 mt-5">
+    <div class="page-header">
+        <h2>Manage Services</h2>
+        {% include "accounts/_top_icons.html" %}
+        <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- filter -->
+<div class="d-flex align-items-center mb-3" style="gap:10px;">
+
+    <a href="{% url 'add_service' %}" class="btn btn-success btn-sm p-2">+ Add Service</a>
+
+    <input type="text" id="search-input" class="form-control mb-0" placeholder="Search services..."
+        style="flex:1; min-width:200px;">
+
+    <button id="all-button" class="btn btn-secondary btn-sm p-2">All</button>
+</div>
+
+{% if services %}
+<div class="table-responsive">
+    <table class="table  align-middle text-light table-sm">
+        <thead class="table">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Price (₹)</th>
+                <th>Duration</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in services %}
+            <tr class="service-row">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ service.name }}</td>
+                <td>{{ service.category|default:"-"|title }}</td>
+                <td>{{ service.description|truncatechars:50 }}</td>
+                <td>{{ service.price_min }} - {{ service.price_max }}</td>
+                <td>{{ service.duration }}</td>
+                <td class="text-end">
+                    <a href="{% url 'view_service' service.id %}" class="btn btn-sm btn-outline-info me-1">View</a>
+                    <a href="{% url 'edit_service' service.id %}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <form action="{% url 'delete_service' service.id %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            <tr id="no-service" style="display: none;">
+                <td colspan="7" class="text-center text-muted">No Service found.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% else %}
+    <p>No services added yet.</p>
+    {% endif %}
+</div>
+
+
+<script>
+    const searchInput = document.getElementById('search-input');
+    const allButton = document.getElementById('all-button');
+    const tableRows = document.querySelectorAll('tbody tr.service-row');
+
+    searchInput.addEventListener('input', function () {
+        const filter = this.value.toLowerCase();
+        let anyVisible = false;
+
+        tableRows.forEach(row => {
+            const nameText = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const categoryText = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            if (nameText.includes(filter) || categoryText.includes(filter)) {
+                row.style.display = '';
+                anyVisible = true;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('no-service').style.display = anyVisible ? 'none' : '';
+    });
+
+    allButton.addEventListener('click', function () {
+        searchInput.value = '';
+        tableRows.forEach(row => row.style.display = '');
+        document.getElementById('no-service').style.display = 'none';
+    });
+
+</script>
+
+
+{% endblock %}

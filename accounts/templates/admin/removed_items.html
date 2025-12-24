@@ -1,0 +1,273 @@
+{% extends "dashboard_base.html" %}
+{% load custom_filters %}
+{% block content %}
+
+<style>
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 10px;
+    }
+
+    .table {
+        width: 100%;
+        min-width: 700px;
+        border-collapse: collapse;
+        background-color: #1e1e1e;
+        color: #f1f1f1;
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px 10px;
+        text-align: left;
+        border-bottom: 1px solid #2e2e2e;
+        white-space: nowrap;
+    }
+
+    .table tr:hover {
+        background: #2b2b2b;
+    }
+
+    .table th {
+        background-color: #2c2c2c;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    .filter-box {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .filter-select {
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: #2c2c2c;
+        color: #fff;
+        border: 1px solid #444;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: none;
+    }
+
+    .btn-success {
+        background: #28a745;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+    }
+
+    .filter-dropdown {
+        background-color: #1e1e1e;
+        color: #fff;
+        border: 1px solid #444;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        border-radius: 6px;
+        min-width: 180px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .filter-dropdown:hover {
+        background-color: #2c2c2c;
+        border-color: #666;
+    }
+
+    .filter-dropdown:focus {
+        outline: none;
+        border-color: #ffffff;
+    }
+
+    .divider {
+        background-color: #333;
+        height: 2px;
+        margin-bottom: 15px;
+        border-radius: 2px;
+    }
+</style>
+
+<div class="page-header d-flex justify-content-between align-items-center mb-3 mt-5">
+    <h2>Removed Items</h2>
+    <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+</div>
+
+<div class="divider"></div>
+
+<div class="filter-box">
+    <form method="GET">
+        <select name="filter" class="filter-select filter-dropdown" onchange="this.form.submit()">
+            <option value="bookings" {% if filter_type == 'bookings' %}selected{% endif %}>Bookings ({{ counts.bookings}})
+            </option>
+            <option value="customers" {% if filter_type == 'customers' %}selected{% endif %}>Customers ({{counts.customers }})</option>
+            <option value="staff" {% if filter_type == 'staff' %}selected{% endif %}>Staff ({{ counts.staff }})</option>
+            <option value="admin" {% if filter_type == 'admin' %}selected{% endif %}>Admins ({{ counts.admin }})</option>
+            <option value="payments" {% if filter_type == 'payments' %}selected{% endif %}>Payments ({{ counts.payments}})
+            </option>
+            <option value="booked_parts" {% if filter_type == 'booked_parts' %}selected{% endif %}>Spare Parts ({{ counts.booked_parts}})</option>
+            <option value="refunds" {% if filter_type == 'refunds' %}selected{% endif %}>
+            Refunds ({{ counts.refunds }})
+           </option>
+
+        </select>
+    </form>
+</div>
+
+<form method="POST" action="{% url 'bulk_removed_action' %}">
+    {% csrf_token %}
+
+    <input type="hidden" name="filter_type" value="{{ filter_type }}">
+
+    <div class="d-flex gap-2 justify-content-end">
+        <button type="submit" name="action" value="restore" class="btn btn-success">Restore</button>
+        <button type="submit" name="action" value="delete" class="btn btn-danger">Delete</button>
+    </div>
+
+    <div class="table-responsive mt-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+
+                    {% if filter_type == "bookings" %}
+                    <th>User</th>
+                    <th>Car/Service</th>
+                    <th>Type</th>
+                    <th>Status</th>
+
+
+                    {% elif filter_type == "customers" or filter_type == "staff" or filter_type == "admin" %}
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Date Joined</th>
+
+                    {% elif filter_type == "booked_parts" %}
+                    <th>Part</th>
+                    <th>Customer</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Car</th>
+                    <th>Quantity</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Booked At</th>
+
+
+                    {% elif filter_type == "payments" %}
+                    <th>Booking</th>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Advance</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+
+
+                    {% elif filter_type == "refunds" %}
+                    <th>Type</th>
+                    <th>User</th>
+                    <th>Item</th>
+                    <th>Amount</th>
+                    <th>Refund Date</th>
+                    <th>Status</th>
+
+                    {% endif %}
+
+                    
+
+                    <th>
+                        <label style="display:flex; align-items:center; gap:5px; margin-bottom:0;">
+                            Select
+                            <input type="checkbox" id="select_all" class="mb-0">
+                        </label>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+
+                    {% if filter_type == "bookings" %}
+    <td>{{ item.user.username }}</td>
+    <td>
+        {% if item.car %}{{ item.car.name }}{% elif item.service %}{{ item.service.name }}{% else %}N/A{% endif %}
+    </td>
+    <td>{{ item.booking_type|pretty_label }}</td>
+    <td>{{ item.status }}</td>
+
+{% elif filter_type == "customers" or filter_type == "staff" or filter_type == "admin" %}
+    <td>{{ item.username }}</td>
+    <td>{{ item.email }}</td>
+    <td>{{ item.date_joined|date:"Y-m-d" }}</td>
+
+{% elif filter_type == "booked_parts" %}
+    <td>{{ item.part.name }}</td>
+    <td>{{ item.customer_name }}</td>
+    <td>{{ item.email }}</td>
+    <td>{{ item.phone }}</td>
+    <td>{{ item.car_name }}</td>
+    <td>{{ item.quantity }}</td>
+    <td>{% if item.payment_method == 'cod' %}Cash on Delivery{% else %}Online Payment{% endif %}</td>
+    <td>{{ item.status|capfirst }}</td>
+    <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+
+{% elif filter_type == "payments" %}
+    <td>{% if item.car %}{{ item.car.name }}{% elif item.service %}{{ item.service.name }}{% else %}N/A{% endif %}</td>
+    <td>{{ item.username }}</td>
+    <td>{{ item.total_amount }}</td>
+    <td>{{ item.advance_payment }}</td>
+    <td>{{ item.balance }}</td>
+    <td>{{ item.status }}</td>
+
+{% elif filter_type == "refunds" %}
+    <td>{{ item.type }}</td>
+    <td>{{ item.user }}</td>
+    <td>{{ item.item }}</td>
+    <td>{{ item.amount }}</td>
+    <td>{{ item.date|date:"Y-m-d H:i" }}</td>
+    <td>{{ item.status }}</td>
+
+{% endif %}
+
+                  
+                    
+                    <td><input type="checkbox" name="selected_ids" value="{{ item.id }}" class="mb-0"></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="20" class="text-center text-muted py-3">
+                        {% if filter_type == "bookings" %}
+                        No bookings found.
+                        {% elif filter_type == "customers" %}
+                        No customers found.
+                        {% elif filter_type == "staff" %}
+                        No staff members found.
+                        {% elif filter_type == "payments" %}
+                        No payments found.
+                        {% else %}
+                        No admin found.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</form>
+
+<script>
+    document.getElementById('select_all').addEventListener('click', function (e) {
+        const checkboxes = document.querySelectorAll('input[name="selected_ids"]');
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    padding: 40px 0;
+}
+.add-car-card {
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 40px 50px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+    color: #f2f2f2;
+}
+.add-car-card h3 {
+    color: var(--primary-color);
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+.add-car-card p {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+.add-car-card label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #f9f9f9;
+    font-size: 0.95rem;
+}
+.add-car-card input[type="text"],
+.add-car-card input[type="number"],
+.add-car-card input[type="file"],
+.add-car-card textarea,
+.add-car-card select {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+.add-car-card input:focus,
+.add-car-card textarea:focus,
+.add-car-card select:focus {
+    border-color: #6682ff;
+    outline: none;
+    box-shadow: 0 0 8px #ffcc6640;
+}
+
+.feature-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.feature-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #6682ff;
+    cursor: pointer;
+}
+
+
+.image-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.delete-image {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.delete-image:hover {
+    background-color: #a71d2a;
+}
+
+/* Buttons */
+#add-image {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+#add-image:hover {
+    background-color: #1e7e34;
+    transform: scale(1.03);
+}
+button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+button[type="submit"]:hover {
+    background-color: #0056b3;
+    transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+    .add-car-card {
+        width: 90%;
+        padding: 25px;
+    }
+    .image-form {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+.add-car-card select,
+.edit-car-card select {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #fff;  
+    color: #333;             
+    cursor: pointer;
+}
+
+.add-car-card select:focus,
+.edit-car-card select:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 6px rgba(74,144,226,0.3);
+}
+
+</style>
+
+<div class="add-car-page mt-4">
+  <div class="page-header">
+    <h2>Add Cars</h2>
+    <a href="{% url 'manage_cars' %}"><i class="fa-solid fa-arrow-left"></i></a>
+  </div>
+
+  <div class="divider bg-secondary mb-4" style="height:2px;"></div>
+
+  <div class="add-car-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <h3>Main Car Details</h3>
+      {% for field in car_form %}
+          {% if field.name != 'featured' %}
+              <p>
+                  {{ field.label_tag }}
+                  {{ field }}
+                  {% if field.help_text %}
+                      <small>{{ field.help_text }}</small>
+                  {% endif %}
+                  {% for error in field.errors %}
+                      <span style="color:red">{{ error }}</span>
+                  {% endfor %}
+              </p>
+          {% endif %}
+      {% endfor %}
+
+   
+      <div class="feature-checkbox">
+          <input type="checkbox" id="{{ car_form.featured.id_for_label }}" name="{{ car_form.featured.name }}" {% if car_form.featured.value %}checked{% endif %}>
+          <label for="{{ car_form.featured.id_for_label }}">Featured</label>
+      </div>
+
+      <h3>Extra Images</h3>
+      {{ formset.management_form }}
+
+      <div id="image-formset">
+        {% for form in formset %}
+        <div class="image-form">
+          {{ form.image }}
+          <button type="button" class="delete-image">Delete</button>
+        </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" id="add-image">+ Add More Images</button>
+      <br><br>
+      <button type="submit">Save Car</button>
+    </form>
+  </div>
+</div>
+
+<script>
+let formCount = parseInt('{{ formset.total_form_count }}');
+const formsetDiv = document.getElementById('image-formset');
+const addBtn = document.getElementById('add-image');
+const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+
+// Add More Image Inputs
+addBtn.addEventListener('click', () => {
+    const newForm = formsetDiv.children[0].cloneNode(true);
+    const formRegex = new RegExp(`form-(\\d){1}-`, 'g');
+    newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+    newForm.querySelector('input').value = '';
+    formsetDiv.appendChild(newForm);
+    formCount++;
+    totalForms.value = formCount;
+
+    attachDeleteHandlers();
+});
+
+// Delete Image Button
+function attachDeleteHandlers() {
+    document.querySelectorAll('.delete-image').forEach(btn => {
+        btn.onclick = () => {
+            btn.parentElement.remove();
+            formCount--;
+            totalForms.value = formCount;
+        };
+    });
+}
+
+
+attachDeleteHandlers();
+</script>
+
+{% endblock %}

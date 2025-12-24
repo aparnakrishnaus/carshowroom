@@ -1,0 +1,274 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+  a.btn-secondary {
+    background-color: #4b4bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: 0.3s;
+  }
+
+  a.btn-secondary:hover {
+    background-color: #3a3ae6;
+    color: #fff;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .page-header h2 {
+    font-size: 1.5rem;
+    color: #eee;
+    font-weight: 600;
+  }
+
+  .page-header a {
+    color: #ccc;
+    font-size: 1.2rem;
+    transition: 0.3s;
+  }
+
+  .page-header a:hover {
+    color: #fff;
+  }
+
+  .badge {
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 50px;
+    text-transform: capitalize;
+    color: #000;
+    display: inline-block;
+    background-color: transparent !important;
+  }
+
+  .bg-primary {
+    background-color: #0d6efd;
+  }
+
+  .bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+  }
+
+  .bg-danger {
+    background-color: #dc3545 !important;
+  }
+
+  .btn-action {
+    padding: 0.35rem 0.8rem;
+    font-size: 0.7rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-right: 5px;
+    transition: 0.3s;
+  }
+
+  .btn-profile {
+    background-color: #0d6efd;
+    color: #fff;
+  }
+
+  .btn-profile:hover {
+    background-color: #0a58ca;
+  }
+
+  .btn-booking {
+    background-color: #6610f2;
+    color: #fff;
+  }
+
+  .btn-booking:hover {
+    background-color: #520dc2;
+  }
+
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+  }
+
+  .table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+    font-size: 0.85rem;
+  }
+
+  .table thead {
+    background-color: #1a1a1a;
+    color: #fff;
+    font-weight: 600;
+  }
+
+
+  .table th {
+    background-color: #2c2c2c;
+    font-weight: 500;
+    color: #fff;
+  }
+
+
+  .table tbody {
+    background-color: #fff;
+    color: #000;
+  }
+
+  .table tbody td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+  }
+
+  .table tbody .badge {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+
+  .btn-action {
+    display: inline-block;
+    padding: 4px 8px;
+    margin: 0 2px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #fff;
+    transition: 0.2s;
+  }
+
+  .btn-profile {
+    background-color: #0d6efd;
+  }
+
+  .btn-profile:hover {
+    background-color: #0b5ed7;
+  }
+
+  .btn-booking {
+    background-color: #198754;
+  }
+
+  .btn-booking:hover {
+    background-color: #157347;
+  }
+
+  .btn-delete {
+    background-color: #dc3545;
+  }
+
+  .btn-delete:hover {
+    background-color: #b02a37;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .table tbody .text-muted {
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .table-responsive {
+      border-radius: 10px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .table {
+      min-width: 600px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<div class="container mt-5">
+  <div class="page-header">
+    <h2>Manage Customers</h2>
+    {% include "accounts/_top_icons.html" %}
+    <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+  </div>
+  <div class="divider bg-secondary mb-4" style="height:2px;"></div>
+
+  <a href="{% url 'add_customer_booking' %}" class="btn btn-success">
+    Add Customer
+  </a>
+
+
+  <div class="table-responsive mt-4">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Sl.No</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Joined On</th>
+          <th>Role</th>
+          <th>Actions</th>
+          <th>Del</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+        <tr>
+          <td data-label="#"> {{ forloop.counter }} </td>
+          <td data-label="Username"> {{ customer.username }} </td>
+          <td data-label="Email"> {{ customer.email }} </td>
+          <td data-label="Joined On"> {{ customer.date_joined|date:"M d, Y" }} </td>
+          <td data-label="Role">
+            <span class="badge 
+              {% if customer.role == 'customer' %}bg-primary
+              {% elif customer.role == 'staff' %}bg-warning
+              {% elif customer.role == 'admin' %}bg-danger
+              {% endif %}">
+              {{ customer.role|title }}
+            </span>
+          </td>
+          <td data-label="Actions">
+            <a href="{% url 'customer_profile' customer.id %}" class="btn-action btn-profile mb-1 ">Profile</a>
+            <a href="{% url 'customer_bookings' customer.id %}" class="btn-action btn-booking mb-1">Bookings</a>
+          </td>
+
+          <td>
+            <form action="{% url 'delete_customer' customer.id %}" method="POST" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn-action btn-delete"
+                onclick="return confirm('Are you sure you want delete this customer?');">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted">No customers found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

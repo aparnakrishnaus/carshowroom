@@ -1,0 +1,177 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+  .service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .add-service-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: linear-gradient(145deg, #111, #1a1a1a);
+    color: #f5f5f5;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+    border: 1px solid silver;
+  }
+
+  .add-service-container h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  .form-control {
+    background-color: #222;
+    border: 1px solid #333;
+    color: #f5f5f5 !important;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+  }
+
+  .form-control:focus {
+    background-color: #1b1b1b;
+    border-color: #999;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.15);
+  }
+
+  textarea.form-control {
+    resize: none;
+  }
+
+  .btn {
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 8px 14px;
+    transition: 0.3s ease;
+  }
+
+  .btn-primary {
+    background-color: #ff7b00;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #ffa041;
+  }
+
+  .btn-secondary {
+    background-color: #333;
+    border: none;
+    color: #fff;
+  }
+
+  .btn-secondary:hover {
+    background-color: #555;
+  }
+
+  .form-control[type="file"] {
+    padding: 5px;
+    background: #111;
+    border: 1px solid #333;
+  }
+
+  .mb-2 {
+    margin-bottom: 1rem !important;
+  }
+
+  .step-item ::placeholder {
+    color: rgb(120, 120, 120);
+  }
+</style>
+
+<div class="add-service-container">
+
+  <div class="service-header">
+    <h2>Add Service</h2>
+    <a href="{% url 'manage_services' %}" class="btn-back"><i class="fa-solid fa-arrow-left"></i> </a>
+  </div>
+  <hr>
+  <form method="POST" enctype="multipart/form-data" action="{% url 'add_service' %}">
+    {% csrf_token %}
+    <div class="mb-2">
+      <label class="form-label">Name:</label>
+      <input type="text" name="name" class="form-control" required>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Category:</label>
+      <input type="text" name="category" class="form-control">
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Description:</label>
+      <textarea name="description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Min Price (₹):</label>
+      <input type="number" name="price_min" class="form-control" step="0.01" placeholder="Min Price" required>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Max Price (₹):</label>
+      <input type="number" name="price_max" class="form-control" step="0.01" placeholder="Max Price" required>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Duration:</label>
+      <input type="text" name="duration" class="form-control">
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label">Image:</label>
+      <input type="file" name="image" class="form-control">
+    </div>
+
+    <div class="mb-2 ">
+      <label class="form-label">Workflow Steps:</label>
+      <div id="steps-wrapper">
+        <!-- Step template -->
+        <div class="step-item mb-2">
+          <input type="text" name="step_title[]" class="form-control mb-1" placeholder="Step Title" required>
+          <input type="text" name="step_description[]" class="form-control" placeholder="Step Description" required>
+        </div>
+      </div>
+      <button type="button" id="add-step-btn" class="btn btn-secondary btn-sm mt-2">+ Add Another Step</button>
+    </div>
+
+
+    <div class="d-flex justify-content-between mt-3">
+      <button type="submit" class="btn btn-primary">Add Service</button>
+
+
+      <script>
+        const addStepBtn = document.getElementById('add-step-btn');
+        const stepsWrapper = document.getElementById('steps-wrapper');
+
+        addStepBtn.addEventListener('click', function () {
+          const stepDiv = document.createElement('div');
+          stepDiv.classList.add('step-item', 'mb-2');
+          stepDiv.innerHTML = `
+            <input type="text" name="step_title[]" class="form-control mb-1" placeholder="Step Title" required>
+            <input type="text" name="step_description[]" class="form-control" placeholder="Step Description" required>
+        `;
+          stepsWrapper.appendChild(stepDiv);
+        });
+      </script>
+
+      {% endblock %}

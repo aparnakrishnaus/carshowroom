@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+  /* _______________________________________________________ */
+  /* about */
+  .about-showroom-section {
+    position: relative;
+    background-color: #141414;
+    color: var(--primary-color);
+    padding: 160px 20px;
+    overflow: hidden;
+    margin-top: -80px;
+  }
+
+  .about-showroom-section .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  .about-showroom-section .content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+  }
+
+  .about-showroom-section h2 {
+    font-size: 3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-family: var(--main-font);
+  }
+
+  .about-showroom-section h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .about-showroom-section p {
+    font-size: 1rem;
+    color: var(--secondary-color);
+    line-height: 1.8;
+  }
+
+  .about-showroom-section img {
+    max-width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    .about-showroom-section {
+      padding: 80px 15px;
+    }
+
+    .about-showroom-section .row {
+      flex-direction: column-reverse;
+    }
+
+    .about-showroom-section h2 {
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .about-showroom-section p {
+      text-align: center;
+    }
+  }
+
+  /* _______________________________________________ */
+  /* divider */
+  .section-divider {
+    width: 30%;
+    height: 2px;
+    background: linear-gradient(to right, #222, #555, #222);
+    margin: 0 auto 40px auto;
+  }
+
+  /* _______________________________________________________ 
+ /* vision */
+  .vision-floating-section {
+    background-color: #141414;
+    color: #f5f5f5;
+    font-family: 'Poppins', sans-serif;
+    padding: 80px 20px;
+    margin-top: -40px;
+  }
+
+  .vision-floating-section h2 {
+    font-size: 2rem;
+    margin-bottom: 50px;
+    position: relative;
+    font-family: var(--main-font);
+    color: var(--primary-color);
+  }
+
+  .vision-floating-section h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .vision-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    color: var(--secondary-color);
+  }
+
+  .vision-item {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 30px 20px;
+    flex: 1 1 250px;
+    max-width: 300px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 1px solid rgba(192, 192, 192, 0.4);
+    border-bottom: 1px solid rgba(192, 192, 192, 0.4);
+  }
+
+  .vision-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  }
+
+  .vision-item i {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #f5f5f5;
+  }
+
+  .vision-item p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .vision-line {
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(to right, #aaa, #fff, #aaa);
+    margin: 20px auto 0 auto;
+    border-radius: 2px;
+  }
+
+  @media(max-width: 768px) {
+    .vision-items {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  /* _______________________________________________________ 
+/* testimonial */
+  .reviews {
+    background-color: #141414;
+    color: white;
+    padding: 50px 20px;
+    text-align: center;
+    margin-top: -40px;
+    position: relative;
+  }
+
+  .reviews h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-family: var(--main-font);
+  }
+
+  .reviews h2::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    margin: 10px auto 0;
+    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+    clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+  }
+
+  .review {
+    display: none;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    font-family: var(--secondary-font);
+  }
+
+  .review.active {
+    display: block;
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .review img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 2px solid rgb(167, 167, 169);
+  }
+
+  .review h4 {
+    margin-top: 10px;
+    font-weight: bold;
+    color: silver;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .customer-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 30px 20px;
+    color: white;
+    background: transparent;
+  }
+
+  .counter-box {
+    text-align: center;
+  }
+
+  .counter-box i {
+    font-size: 22px;
+    color: rgb(255, 252, 252);
+    margin-bottom: 10px;
+  }
+
+  .counter-box h3 {
+    font-size: 1.5rem;
+    color: white;
+    font-family: var(--main-font);
+  }
+
+  .counter-box p {
+    font-size: .9rem;
+    color: #ccc;
+  }
+
+  .reviews::before,
+  .reviews::after {
+    content: "";
+    position: absolute;
+    top: 10%;
+    bottom: 10%;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #fff, transparent);
+    opacity: 0.5;
+    z-index: 2;
+    transition: opacity 0.3s ease;
+  }
+
+  .reviews::before {
+    left: 60px;
+  }
+
+  .reviews::after {
+    right: 60px;
+  }
+
+  .reviews:hover::before,
+  .reviews:hover::after {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 992px) {
+    .reviews::before {
+      left: 30px;
+    }
+
+    .reviews::after {
+      right: 30px;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    .reviews::before,
+    .reviews::after {
+      display: none;
+    }
+  }
+
+  .review-slider-wrapper {
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+  .review-slider-container {
+   overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.review-slider {
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+.review-slide {
+  min-width: 100%;     
+  padding: 20px;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+.review-content {
+  text-align: center;
+  color: white;
+  font-size: 18px;
+}
+
+.reviewer-info h4 {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #ccc;
+}
+
+.slider-dots {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.slider-dots .dot {
+  height: 10px;
+  width: 10px;
+  margin: 0 5px;
+  background-color: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.slider-dots .dot.active {
+  background-color: white;
+  width: 12px;
+  height: 12px;
+}
+.no-review{
+  color: silver;
+}
+</style>
+
+
+
+<!-- _______________________________________________________________ -->
+<!-- about banner -->
+<section class="about-showroom-section d-flex align-items-center">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6 text-left content">
+        <h2>Welcome to Prestige Lane</h2>
+        <p>
+          Step into a world where elegance meets engineering.
+          At Prestige Lane, every car is more than just a drive — it's a symbol of class, power, and perfection.
+          Discover our luxury showroom designed to redefine your automotive experience.
+        </p>
+      </div>
+      <div class="col-md-6 text-center">
+        <img src="{% static 'images/about/showroom.jpg' %}" alt="Showroom" class="img-fluid rounded shadow-lg">
+      </div>
+    </div>
+  </div>
+</section>
+<!-- _______________________________________________________________ -->
+<!-- divider -->
+<div class="section-divider"></div>
+<!-- _______________________________________________________________ -->
+<!-- vision -->
+<section class="vision-floating-section py-5">
+  <div class="container text-center">
+    <h2 class="mb-5">Our Journey of Craftsmanship</h2>
+    <div class="vision-items">
+      <div class="vision-item">
+        <i class="fas fa-pencil-alt"></i>
+        <p><strong style="color: white;">Precision Meets Passion</strong> — every design begins with a sketch by
+          artisans who live and breathe automotive
+          beauty.</p>
+        <div class="vision-line"></div>
+      </div>
+      <div class="vision-item">
+        <i class="fas fa-cogs"></i>
+        <p><strong style="color: white;">Engineered for Emotion</strong> — each curve, every roar, tuned to stir
+          something within.</p>
+        <div class="vision-line"></div>
+      </div>
+      <div class="vision-item">
+        <i class="fas fa-trophy"></i>
+        <p><strong style="color: white;">Driven by Excellence</strong> — redefining what luxury feels like, one
+          masterpiece at a time.</p>
+        <div class="vision-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- _______________________________________________________________ -->
+<!-- divider -->
+<div class="section-divider"></div>
+
+<!-- _______________________________________________________________ -->
+<!-- TESTIMONIAL -->
+<section class="reviews">
+  <h2>What Our Customers Say</h2>
+
+  <div class="customer-stats">
+    <div class="counter-box">
+      <i class="fas fa-car"></i>
+      <h3 id="customerCount" class="counter" data-target="3024" data-duration="2500"></h3>
+      <p>Happy Customers</p>
+    </div>
+    <div class="counter-box">
+      <i class="fas fa-star"></i>
+      <h3 id="reviewCount" class="counter" data-target="350" data-duration="2000"></h3>
+      <p>5-Star Reviews</p>
+    </div>
+    <div class="counter-box">
+      <i class="fas fa-globe"></i>
+      <h3 id="countryCount" class="counter" data-target="18" data-duration="1500"></h3>
+      <p>Countries Served</p>
+    </div>
+</div>
+
+  <div class="review-slider-wrapper">
+    <div class="review-slider-container">
+  <div class="review-slider" id="reviewSlider">
+    {% for review in approved_reviews %}
+    <div class="review-slide">
+      <div class="review-content">
+        <p>"{{ review.comment }}"</p>
+        <div class="reviewer-info">
+          <h4>- {{ review.user.get_full_name|default:review.user.username }}</h4>
+
+          <div class="review-rating">
+            {% for i in "12345" %}
+              {% if i|add:"0" <= review.rating %}
+                <i class="fa-solid fa-star" style="color: yellow;"></i>
+              {% else %}
+                <i class="fa-regular fa-star"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="no-review ">No reviews yet.</p>
+    {% endfor %}
+  </div>
+</div>
+<div class="slider-dots" id="sliderDots">
+    {% for review in approved_reviews %}
+      <span class="dot"></span>
+    {% endfor %}
+  </div>
+  </div>
+
+</section>
+
+
+<!-- _______________________________________________________________ -->
+
+
+
+<!-- _______________________________________________________________ -->
+<script>
+  //___________________________________________________________________________________
+
+  // review
+let currentSlide = 0;
+const slider = document.getElementById("reviewSlider");
+const slides = document.querySelectorAll(".review-slide");
+const dots = document.querySelectorAll(".dot");
+
+if (slides.length > 0) {
+
+  function updateSlider() {
+    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+    if (dots.length > 0) {
+      dots.forEach(dot => dot.classList.remove("active"));
+      dots[currentSlide].classList.add("active");
+    }
+  }
+
+  dots.forEach((dot, index) => {
+    dot.addEventListener("click", () => {
+      currentSlide = index;
+      updateSlider();
+    });
+  });
+
+  if (dots.length > 0) {
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateSlider();
+    }, 3000);
+  }
+
+  updateSlider();
+}
+
+  //___________________________________________________________________________________
+
+  // counter
+  document.addEventListener("DOMContentLoaded", () => {
+
+  function animateCounter(id, target, duration = 2000) {
+    const counter = document.getElementById(id);
+    let start = null;
+
+    function updateCounter(timestamp) {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const current = Math.floor(progress * target);
+      counter.innerText = current;
+
+      if (progress < 1) {
+        requestAnimationFrame(updateCounter);
+      }
+    }
+
+    requestAnimationFrame(updateCounter);
+  }
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const counter = entry.target;
+        const value = parseInt(counter.getAttribute("data-target"));
+        const duration = parseInt(counter.getAttribute("data-duration")) || 2000;
+
+        animateCounter(counter.id, value, duration);
+        observer.unobserve(counter);
+      }
+    });
+  }, { threshold: 0 });
+
+  document.querySelectorAll("h3.counter").forEach(counter => {
+    observer.observe(counter);
+  });
+
+});
+</script>
+{% endblock %}
+
+
+    

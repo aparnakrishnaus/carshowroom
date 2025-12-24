@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background-color: #000;
+        color: #e0e0e0;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .details-container {
+        max-width: 1000px;
+        margin: 60px auto;
+        padding: 20px 25px;
+        background: #0c0c0c;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.03);
+    }
+
+    .service-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .image-section {
+        flex: 1 1 400px;
+    }
+
+    .image-section img {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 1px solid #333;
+    }
+
+    .service-info {
+        flex: 1 1 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .service-section {
+        padding: 10px 0;
+        border-bottom: 1px solid #2a2a2a;
+    }
+
+    .service-section:last-child {
+        border-bottom: none;
+    }
+
+    .price-duration {
+        display: flex;
+        gap: 20px;
+        font-size: 1rem;
+        color: #ccc;
+    }
+
+
+    .service-specs p {
+        margin: 6px 0;
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .service-description {
+        font-size: 0.95rem;
+        color: #ccc;
+        line-height: 1.6;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 8px 30px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .book-now {
+        background-color: #fff;
+        color: #000;
+    }
+
+    .book-now:hover {
+        background-color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        color: black;
+    }
+
+    .workflow-section {
+        margin-top: 40px;
+    }
+
+    .workflow-steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .workflow-step-card {
+        background-color: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        padding: 12px;
+        flex: 1 1 200px;
+        text-align: center;
+    }
+
+    .workflow-step-card h3 {
+        font-size: 1.5rem;
+        color: #736fa3;
+        margin: 0;
+    }
+
+    .workflow-step-card p {
+        font-size: 0.85rem;
+    }
+
+    .workflow-step-card h4 {
+        font-size: 1.2rem;
+        color: #fff;
+        margin: 5px 0 10px;
+        font-family: var(--main-font);
+    }
+
+    .workflow-step-card p {
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    h3 {
+        font-family: var(--main-font);
+        font-size: 1.4rem;
+    }
+
+    .price-duration span {
+        font-size: .9rem;
+    }
+
+    .service-head {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 40px;
+        margin-top: 100px;
+        text-align: center;
+        color: var(--primary-color);
+        font-family: var(--main-font);
+        font-size: 1.7rem;
+    }
+
+    .service-head::after {
+        content: "";
+        display: block;
+        width: 80px;
+        height: 4px;
+        margin: 12px auto 0;
+        background: linear-gradient(90deg, #bbb, #fff, #bbb);
+        clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%);
+    }
+
+    @media(max-width: 768px) {
+        .service-header {
+            flex-direction: column;
+        }
+
+        .image-section img {
+            height: 250px;
+        }
+
+        .workflow-steps {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<h2 class="service-head"> {{ service.name }}</h2>
+
+<div class="container details-container">
+
+    <div class="service-header">
+
+        <!-- Image Left -->
+        <div class="image-section">
+            {% if service.image %}
+            <img src="{{ service.image.url }}" alt="{{ service.name }}">
+            {% endif %}
+        </div>
+
+        <!-- Info Right -->
+        <div class="service-info">
+
+            <!-- Price + Duration -->
+            <div class="service-section">
+                <h3 style="color:#fff; margin-bottom:8px;">Price & Duration </h3>
+                <div class="price-duration">
+                    {% if service.price_min or service.price_max %}
+                    <span>Price: ₹{{ service.price_min }} - {{ service.price_max }}</span>
+                    {% endif %}
+                    {% if service.duration %}
+                    <span>Duration: {{ service.duration }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Categories -->
+            {% if service.category %}
+            <div class="service-section">
+                <h3 style="color:#fff; margin-bottom:8px;">Category</h3>
+                <div class="service-specs">
+                    <p>{{ service.category|title }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+
+            <!-- Notes -->
+            {% if service.notes %}
+            <div class="service-section">
+                <h3 style="color:#fff; margin-bottom:8px;">Notes</h3>
+                <p class="service-description">{{ service.notes }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Description -->
+            {% if service.description %}
+            <div class="service-section">
+                <h3 style="color:#fff; margin-bottom:8px;">Description</h3>
+                <p class="service-description">{{ service.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="service-section">
+                <div class="actions">
+                    <a href="{% url 'book_service' service.id %}" class="btn book-now"> <i
+                            class="bi bi-calendar-check"></i> Book Now</a>
+                    <a href="{% url 'services_list' %}" class="btn book-now">Cancel</a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <hr>
+  <!-- Workflow Steps -->
+{% if service.process_steps %}
+<div class="workflow-section">
+    <h3 style="color:#fff; margin-bottom:15px;">Workflow Steps</h3>
+
+    <div class="workflow-steps">
+        {# Check if process_steps is iterable directly (JSON/list) #}
+        {% if service.process_steps.all %}
+            {% for step in service.process_steps.all %}
+                <div class="workflow-step-card">
+                    <h3>{{ forloop.counter }}</h3>
+                    <h4>{{ step.title }}</h4>
+                    <p>{{ step.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            {% for step in service.process_steps %}
+                <div class="workflow-step-card">
+                    <h3>{{ forloop.counter }}</h3>
+                    <h4>{{ step.title }}</h4>
+                    <p>{{ step.description }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+
+</div>
+
+{% endblock %}

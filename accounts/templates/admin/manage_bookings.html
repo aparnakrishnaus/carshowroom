@@ -1,0 +1,588 @@
+{% extends "dashboard_base.html" %}
+{% load custom_filters %}
+{% block content %}
+
+<style>
+    .container {
+        margin: 0 auto;
+    }
+
+    .divider {
+        background-color: #333;
+        height: 2px;
+        margin-bottom: 15px;
+        border-radius: 2px;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 10px;
+    }
+
+    .table {
+        width: 100%;
+        min-width: 700px;
+        border-collapse: collapse;
+        background-color: #1e1e1e;
+        color: #f1f1f1;
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px 10px;
+        text-align: left;
+        border-bottom: 1px solid #2e2e2e;
+        white-space: nowrap;
+    }
+
+    .table th {
+        background-color: #2c2c2c;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    .table tbody tr:hover {
+        background-color: #2a2a2a;
+    }
+
+    .btn-sm {
+        background: transparent;
+        padding: 4px 8px;
+        border: unset;
+        transition: 0.25s;
+        font-size: 0.8rem;
+    }
+
+    .fa-solid {
+        background-color: transparent;
+        border: none;
+    }
+
+    .fa-trash {
+        color: red;
+
+    }
+
+    .fa-xmark {
+        color: orangered;
+    }
+
+    .fa-check {
+        color: green;
+    }
+
+    .filters-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: #1a1a1a;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+
+    .filter-title {
+        color: #aaa;
+        font-size: 0.9rem;
+        font-weight: 500;
+        min-width: 60px;
+    }
+
+    .filter-btn {
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        border: 1px solid #333;
+        background: #222;
+        color: #ccc;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+        background: #333;
+        color: #fff;
+        border-color: #555;
+    }
+
+    .filter-btn.active {
+        background: #0d6efd;
+        color: #fff;
+        border-color: #0b5ed7;
+    }
+
+    .date-filter-form {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .date-filter-form input[type="date"],
+    .date-filter-form button {
+        height: 34px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        border: 1px solid #333;
+        background: #222;
+        color: #fff;
+        padding: 0 8px;
+        box-sizing: border-box;
+    }
+
+    .date-filter-form input {
+        margin-bottom: 0;
+    }
+
+
+    .date-filter-form input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+
+    .date-filter-form button {
+        cursor: pointer;
+    }
+
+    .date-filter-form button:hover {
+        background: #0d6efd;
+        color: #fff;
+        border-color: #0b5ed7;
+    }
+
+    table.table td.past-booking {
+        background-color: #f8d7da !important;
+        color: #721c24 !important;
+        border-radius: 4px;
+        padding: 3px 6px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .filter-group {
+            flex-wrap: wrap;
+        }
+
+        .filters-container {
+            padding: 10px 15px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .filter-group {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .filter-title {
+            margin-bottom: 5px;
+        }
+    }
+
+    @media (max-width: 576px) {
+
+        .table th,
+        .table td {
+            padding: 4px 6px;
+            font-size: 0.75rem;
+        }
+
+        .table {
+            min-width: 600px;
+        }
+
+        .filters-container {
+            padding: 8px 10px;
+        }
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.35rem 0.8rem;
+        font-size: 0.8rem;
+        transition: 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .completed {
+        color: #721c24;
+        font-size: 0.7rem;
+        border-radius: 6px;
+        padding: 0.37rem 0.6rem;
+        display: inline-block;
+        text-align: center;
+        border: 2px solid #721c24;
+    }
+
+    .badge,
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 70px;
+        height: 22px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        padding: 0 8px;
+        box-sizing: border-box;
+    }
+
+    .badge.bg-success {
+        background: #28a745;
+        color: #fff !important;
+    }
+
+    .badge.bg-warning {
+        background: #f9c74f;
+        color: #222 !important;
+    }
+
+    .badge.bg-info {
+        background: #17a2b8;
+        color: #fff !important;
+    }
+
+    .badge.bg-secondary {
+        background: #6c757d;
+        color: #fff !important;
+    }
+
+    .status-approved {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .status-pending {
+        background-color: #f9c74f;
+        color: #222;
+    }
+
+    .status-cancelled {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    .mail-btn {
+        border-radius: 6px;
+        padding: 0.35rem 0.8rem;
+        font-size: 0.8rem;
+        transition: 0.3s;
+        background-color: rgb(99, 169, 172);
+        color: white;
+        border: none;
+    }
+
+    .mail-btn:hover {
+        background-color: rgb(59, 138, 141);
+        color: white;
+    }
+     @media (max-width: 768px) {
+      .page-header {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .page-header h2 {
+        text-align: left;
+        font-size: 1.3rem;
+      }
+
+      .page-header .icon-btn {
+        font-size: 1.2rem;
+      }
+    }
+</style>
+
+
+<div class="container mt-5">
+    <div class="page-header">
+        <h2>Bookings</h2>
+        {% include "accounts/_top_icons.html" %}
+           <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="filters-container mt-3">
+        <!-- TYPE FILTERS -->
+        <div class="filter-group">
+            <span class="filter-title">Type:</span>
+            <a href="?type=all" class="filter-btn {% if active_filter == 'type_all' %}active{% endif %}">All ({{ filter_counts.type_all }})</a>
+            <a href="?type=car" class="filter-btn {% if active_filter == 'type_car' %}active{% endif %}">Car ({{ filter_counts.type_car }})</a>
+            <a href="?type=testdrive"
+                class="filter-btn {% if active_filter == 'type_testdrive' %}active{% endif %}">Test Drive ({{ filter_counts.type_testdrive }})</a>
+            <a href="?type=service" class="filter-btn {% if active_filter == 'type_service' %}active{% endif %}">Service ({{ filter_counts.type_service }})</a>
+        </div>
+
+        <!-- STATUS FILTERS -->
+        <div class="filter-group">
+            <span class="filter-title">Status:</span>
+            <a href="?status=approved"
+                class="filter-btn {% if active_filter == 'status_approved' %}active{% endif %}">Approved ({{  filter_counts.status_approved }})</a>
+            <a href="?status=pending"
+                class="filter-btn {% if active_filter == 'status_pending' %}active{% endif %}">Pending ({{filter_counts.status_pending }})</a>
+            <a href="?status=cancelled"
+                class="filter-btn {% if active_filter == 'status_cancelled' %}active{% endif %}">Cancelled ({{ filter_counts.status_cancelled }})</a>
+            <a href="?status=completed"
+                class="filter-btn {% if active_filter == 'status_completed' %}active{% endif %}">Completed ({{ filter_counts.status_completed }})</a>
+        </div>
+
+        <!-- DATE FILTER -->
+        <div class="filter-group">
+            <span class="filter-title">Date:</span>
+            <a href="?today=true" class="filter-btn {% if active_filter == 'today' %}active{% endif %}">Today ({{ filter_counts.today }})</a>
+
+            <form method="get" class="date-filter-form d-inline-flex align-items-center">
+                <input type="date" name="date" class="form-control form-control-sm" required
+                    value="{{ request.GET.date|default:'' }}">
+                <button type="submit" class="filter-btn {% if active_filter == 'date' %}active{% endif %}">Go</button>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <a href="{% url 'add_booking' %}" class="btn btn-success">
+            Add Booking
+        </a>
+        <form action="{% url 'send_all_due_emails' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning mail-btn">
+                Send Mail ({{ pending_email_count }})
+            </button>
+        </form>
+    </div>
+
+
+    <div class="table-responsive mt-4">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Booked</th>
+                    <th>Type</th>
+                    <th>Car/Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <th>Del</th>
+                    <th>More</th>
+                    <th>Done</th>
+                    <th>Paid</th>
+                    <th>Email Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        {{ booking.user.get_full_name|default:booking.user.username }}
+                    </td>
+
+                    <td>{{ booking.created_at|date:"d M Y H:i A" }}</td>
+                    <td>{{ booking.booking_type|pretty_label }}</td>
+                    <td>
+                        {% if booking.car %}
+                        {{ booking.car.name }}
+                        {% elif booking.service %}
+                        {{ booking.service.name }}
+                        {% else %}
+                        {{ booking.name }}
+                        {% endif %}
+                    </td>
+
+                    <td class="{% if booking.date < today %}past-booking{% endif %}">
+                        {{ booking.date|date:"d M Y" }}
+                        {% if booking.time %} {{ booking.time|time:"h:i A" }}{% endif %}
+                    </td>
+
+                    <td>
+                        <span class="badge-status
+                            {% if booking.status == 'Approved' %}status-approved
+                            {% elif booking.status == 'Pending' %}status-pending
+                            {% elif booking.status == 'Cancelled' %}status-cancelled
+                            {% else %}bg-secondary{% endif %}">
+                            {{ booking.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if booking.status|lower == 'pending' %}
+                        <a href="{% url 'approve_booking' booking.id %}" class="btn-sm me-1"><i
+                                class="fa-solid fa-check" ></i></a>
+                        <form action="{% url 'delete_booking_admin' booking.id %}" method="POST"
+                            style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm" onclick="return confirm('Delete this booking?')">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{% url 'remove_booking_row' booking.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm" onclick="return confirm('Delete this booking?')"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="{% url 'booking_details' booking.id %}" class="btn-sm" title="View Details">
+                            <i class="fa-solid fa-eye" style="color: #00bcd4;"></i>
+                        </a>
+                    </td>
+
+                    <td>
+                        {% if booking.booking_type == 'book' or booking.booking_type == 'car' %}
+                        {% if booking.is_fully_paid and booking.status == 'Approved' %}
+                        <form method="POST" action="{% url 'complete_booking' booking.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Complete (Car Booking)</button>
+                        </form>
+                        {% elif booking.status == 'Completed' %}
+                        <span class="badge bg-secondary">Completed (Car Booking)</span>
+                        {% elif booking.status != 'Approved' %}
+                        <button type="button" class="btn btn-warning btn-sm" disabled>Awaiting Approval</button>
+                        {% else %}
+                        <button type="button" class="btn btn-secondary btn-sm" disabled>Complete</button>
+                        {% endif %}
+
+                        {% elif booking.booking_type == 'test_drive' %}
+                        {% if booking.status == 'Approved' %}
+                        <form method="POST" action="{% url 'complete_booking' booking.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm text-dark bg-info">Complete (Test Drive)</button>
+                        </form>
+                        {% elif booking.status == 'Completed' %}
+                        <span class="badge bg-secondary text-dark">Completed (Test Drive)</span>
+                        {% else %}
+                        <button type="button" class="btn btn-warning btn-sm" disabled>Awaiting Approval</button>
+                        {% endif %}
+
+                        {% elif booking.booking_type == 'service' %}
+                        {% if booking.is_fully_paid and booking.status == 'Approved' %}
+                        <form method="POST" action="{% url 'complete_booking' booking.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary text-dark bg-info btn-sm">Complete
+                                (Service)</button>
+                        </form>
+                        {% elif booking.status == 'Completed' %}
+                        <span class="badge bg-secondary text-light">Completed (Service)</span>
+                        {% elif booking.status != 'Approved' %}
+                        <button type="button" class="btn btn-warning btn-sm" disabled>Awaiting Approval</button>
+                        {% else %}
+                        <button type="button" class="btn btn-secondary btn-sm" disabled>Complete</button>
+                        {% endif %}
+
+                        {% else %}
+                        <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+             {% if booking.booking_type == 'test_drive' %}
+                     <span class="badge bg-info">N/A</span>
+
+            {% elif booking.booking_type == 'book' or booking.booking_type == 'service' %}
+        
+               {% if booking.is_fully_paid %}
+                 <span class="badge bg-success">Paid</span>
+            {% elif booking.is_advance_paid %}
+                 <span class="badge bg-warning text-dark">Advance Paid</span>
+            {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+            {% endif %}
+
+            {% else %}
+                  <span class="badge bg-info">N/A</span>
+            {% endif %}
+              </td>
+
+                    <td>
+                        {% if booking.booking_type == 'test_drive' %}
+                        <span class="badge bg-info">N/A</span>
+
+                        {% elif booking.email_sent %}
+                        <span class="badge bg-success">Email Sent</span>
+                        <small class="text-muted d-block" style="font-size: 11px;">
+                            {{ booking.email_sent_at|date:"d M Y, h:i A" }}
+                        </small>
+
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Not Sent</span>
+                        {% endif %}
+                    </td>
+
+
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="13" class="text-center text-muted py-3">No bookings found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    $(".filter-btn").click(function () {
+    let type = $(this).data("type");
+
+    $.ajax({
+        url: "/admin/bookings-json/",
+        data: { type: type },
+        success: function (response) {
+            let rows = "";
+            response.bookings.forEach(b => {
+                rows += `
+                    <tr>
+                        <td>${b.username}</td>
+                        <td>${b.type}</td>
+                        <td>${b.date}</td>
+                        <td>${b.status}</td>
+                    </tr>
+                `;
+            });
+
+            $("#booking-table-body").html(rows);
+        }
+    });
+});
+
+</script>
+{% endblock %}

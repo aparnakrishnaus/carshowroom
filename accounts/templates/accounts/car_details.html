@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background-color: #000;
+        color: #e0e0e0;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .details-container {
+        max-width: 1100px;
+        margin: 80px auto 50px;
+        padding: 30px;
+        background: #0c0c0c;
+        border: 1px solid #2a2a2a;
+        border-radius: 12px;
+        box-shadow: 0 4px 30px rgba(255, 255, 255, 0.02);
+    }
+
+    .car-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 30px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .image-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-shrink: 0;
+    }
+
+    .main-image {
+        width: 600px;
+        height: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 12px;
+        border: 1px solid #333;
+        background-color: #111;
+    }
+
+    .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .thumbnail-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .thumbnail {
+        border: 2px solid transparent;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: border 0.3s ease;
+    }
+
+    .thumbnail img {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .thumbnail.active {
+        border: 2px solid #f9f9f9;
+    }
+
+    .car-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .car-name {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .car-category {
+        display: inline-block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 8px;
+        color: #fff;
+    }
+
+    .car-category.basic {
+        background: #777;
+    }
+
+    .car-category.premium {
+        background: #f0c040;
+        color: #000;
+    }
+
+    .car-category.luxury {
+        background: #d12;
+    }
+
+    .car-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #f0c040;
+    }
+
+    .car-specs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 20px;
+        margin-top: 15px;
+    }
+
+    .car-specs p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        color: #fff;
+    }
+
+    .book-now {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        color: #000;
+        background-color: #ffffff;
+        border: 1px solid #ffffff;
+    }
+
+    .book-now:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        color: black;
+    }
+
+    .test-btn,
+    .wishlist-btn {
+        border: 1px solid silver;
+        border-radius: 8px;
+        transition: 0.3s ease;
+    }
+
+    .test-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .wishlist-btn.active i {
+        color: #ff3b3b;
+    }
+
+    .similar-section {
+        max-width: 1100px;
+        margin: 40px auto;
+    }
+
+    .similar-section h3 {
+        font-weight: 600;
+        color: #f0f0f0;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .similar-cars {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .similar-card {
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #0a0a0a;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .similar-card:hover {
+        transform: translateY(-5px);
+        border-color: #444;
+    }
+
+    .similar-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .similar-info {
+        padding: 12px;
+    }
+
+    h3,
+    h2 {
+        font-family: var(--main-font);
+        color: var(--primary-color);
+    }
+
+    .similar-info h5 {
+        margin: 0;
+        font-size: 1rem;
+        color: #fff;
+    }
+
+    .similar-info p {
+        margin: 4px 0 0;
+        font-size: 0.85rem;
+        color: #ccc;
+    }
+
+    .similar-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+    }
+
+    .similar-actions a,
+    .similar-actions button {
+        background: none;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .similar-actions a:hover,
+    .similar-actions button:hover {
+        color: #f0c040;
+    }
+
+    @media (max-width: 768px) {
+        .main-image {
+            width: 100%;
+            height: 250px;
+        }
+
+        .car-header {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .car-specs {
+            grid-template-columns: 1fr;
+        }
+
+        .car-header img {
+            max-width: 90%;
+        }
+    }
+
+     .heart-pop {
+    animation: heart-pop 0.3s ease forwards;
+  }
+
+  @keyframes heart-pop {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.2);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
+
+<div class="container details-container">
+    <div class="car-header">
+        <div class="image-section">
+            <div class="main-image">
+                <img id="mainCarImage" src="{{ car.image.url }}" alt="{{ car.name }}">
+            </div>
+
+            <div class="thumbnail-row">
+
+                <div class="thumbnail active">
+                    <img src="{{ car.image.url }}" alt="Main Image" onclick="changeImage(this)">
+                </div>
+
+
+                {% for img in extra_images %}
+                <div class="thumbnail">
+                    <img src="{{ img.image.url }}" alt="Extra Image" onclick="changeImage(this)">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <div class="car-info">
+            <h2 class="car-name">{{ car.name }}</h2>
+            <span class="car-category {{ car.category|lower }}">{{ car.category }}</span>
+            <p class="car-price">₹{{ car.price }}</p>
+
+            <div class="car-specs">
+                <p><strong>Model Year:</strong> {{ car.model_year|default:"N/A" }}</p>
+                <p><strong>Transmission:</strong> {{ car.transmission|default:"N/A" }}</p>
+                <p><strong>Fuel Type:</strong> {{ car.fuel_type|default:"N/A" }}</p>
+                <p><strong>Engine:</strong> {{ car.engine_type|default:"N/A" }}</p>
+                <p><strong>Mileage:</strong> {{ car.mileage|default:"N/A" }}</p>
+                <p><strong>Seating:</strong> {{ car.seats|default:"N/A" }}</p>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'book_car_action' car.id 'book' %}" class="btn book-now">
+                    <i class="bi bi-calendar-check"></i> Book Now
+                </a>
+
+                <a href="{% url 'book_car_action' car.id 'test_drive' %}" class="btn test-btn"
+                    style="border: 1px solid silver;">
+                    <i class="bi bi-speedometer2"></i> Book Test Drive
+                </a>
+
+              <button class="btn wishlist-btn" data-car-id="{{ car.id }}" style="border: 1px solid silver;"
+    {% if not request.user.is_authenticated %}
+        title="Login or register to add to wishlist"
+    {% endif %}>
+    <i class="bi 
+        {% if car.id in user_wishlist %}bi-heart-fill text-danger
+        {% else %}bi-heart
+        {% endif %} "></i>
+
+    <span class="wishlist-text">
+        {% if car.id in user_wishlist %}
+            Wishlisted
+        {% else %}
+            Wishlist
+        {% endif %}
+    </span>
+</button>
+
+            </div>
+
+            <p style="margin-top:15px;">{{ car.description }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="container similar-section">
+    <h3>Similar Cars</h3>
+    <div class="similar-cars">
+        {% for similar in similar_cars %}
+        <div class="similar-card">
+            <img src="{{ similar.image.url }}" alt="{{ similar.name }}">
+            <div class="similar-info">
+                <h5>{{ similar.name }}</h5>
+                <p>₹{{ similar.price }}</p>
+                <div class="similar-actions">
+                    <a href="{% url 'car_details' similar.id %}"><i class="bi bi-eye"></i></a>
+                    <button class="btn wishlist-btn" data-car-id="{{ similar.id }}">
+                        {% if similar.id in user_wishlist %}
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        {% else %}
+                        <i class="bi bi-heart"></i>
+                        {% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Wishlist toggle
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        const carId = this.dataset.carId;
+        const icon = this.querySelector('i');
+        const text = this.querySelector('.wishlist-text'); // <--- NEW
+
+        fetch(`/wishlist/toggle/${carId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            // Toggle heart
+            if (data.status === 'added') {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill', 'text-danger');
+                text.textContent = "Wishlisted";         // <--- NEW
+            } else {
+                icon.classList.remove('bi-heart-fill', 'text-danger');
+                icon.classList.add('bi-heart');
+                text.textContent = "Wishlist";           // <--- NEW
+            }
+
+            // pop animation
+            icon.classList.add('heart-pop');
+            icon.addEventListener('animationend', () => {
+                icon.classList.remove('heart-pop');
+            }, { once: true });
+        });
+    });
+});
+
+    // thumbnail
+    function changeImage(el) {
+        document.getElementById('mainCarImage').src = el.src;
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        el.parentElement.classList.add('active');
+    }
+</script>
+
+{% endblock %}

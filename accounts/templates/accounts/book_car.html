@@ -1,0 +1,410 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ car.name }} - {{ type|title }}</title>
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(145deg, #121212, #1b1b1b);
+      color: #f1f1f1;
+    }
+/* ___________________________________________________________________________________ */
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 2rem auto;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: nowrap;
+      background: #fff;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .car-section {
+      flex: 0 0 40%;
+      background: #fff;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid #2b2b2b;
+      text-align: center;
+    }
+
+    .car-section img {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+
+    .car-section h3 {
+      color: #000;
+      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    .car-section p {
+      color: #595858;
+      margin: 4px 0;
+      font-size: 0.95rem;
+    }
+
+    .form-section {
+      flex: 1 1 60%;
+      background: #fff;
+      color: #111;
+      padding: 2.5rem;
+    }
+
+    .form-section h2 {
+      text-align: center;
+      color: #000;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      font-family: 'Cinzel Decorative', serif;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: #f5f5f5;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #111;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #00bcd4;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+    }
+
+    input[readonly] {
+      background: #e9f9fc;
+      color: #00bcd4;
+      border-color: #00bcd4;
+      font-weight: 600;
+      cursor: not-allowed;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #00bcd4;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.3s;
+    }
+
+    .btn:hover {
+      background: #009fb4;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #333;
+      color: #fff;
+      padding: 12px 26px;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #555;
+    }
+
+    .message {
+      background: #00bcd4;
+      color: #000;
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+/* ___________________________________________________________________________________ */
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .car-section {
+        flex: 1 1 100%;
+        border-right: none;
+        border-bottom: 1px solid #2b2b2b;
+        padding: 1.5rem 0;
+        width: 100%;
+      }
+
+      .car-section img {
+        width: 100%;
+        max-width: none;
+        border-radius: 0;
+      }
+
+      .form-section {
+        flex: 1 1 100%;
+        padding: 1.5rem 1rem;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .form-section h2 {
+        font-size: 1.2rem;
+      }
+
+      input,
+      select,
+      textarea {
+        font-size: 0.9rem;
+        padding: 9px 10px;
+      }
+
+      .btn,
+      .btn-secondary {
+        width: 100%;
+        padding: 12px;
+      }
+
+      .buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .car-section h3 {
+        font-size: 1.2rem;
+      }
+
+      .car-section p {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  {% if messages %}
+  {% for message in messages %}
+  <div style="background:#00bcd4; color:#000; padding:8px; margin-bottom:10px; border-radius:5px;">
+    {{ message }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <div class="container">
+
+    <!-- Car Section -->
+    <div class="car-section">
+      {% if car.image %}
+      <img src="{{ car.image.url }}" alt="{{ car.name }}">
+      {% else %}
+      <img src="{% static 'images/default-car.jpg' %}" alt="Car">
+      {% endif %}
+
+      <h3>{{ car.name }}</h3>
+      <p><strong>Category:</strong> {{ car.category }}</p>
+      <p><strong>Price:</strong> ₹{{ car.price }}</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <h2>{{ type|title }} Details</h2>
+
+      <form method="POST">
+        {% csrf_token %}
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required pattern="[A-Za-z\s]{3,50}"
+         title="Name should contain only letters and spaces.">
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phone">Phone </label>
+        <input type="tel" id="phone" name="phone" required pattern="\d{10}"
+       title="Enter a valid 10-digit phone number"
+       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+
+        <label for="date">Preferred Date</label>
+        <input type="date" id="date" name="date" required min="{{ today|date:'Y-m-d' }}">
+
+
+        <label for="time">Preferred Time Slot</label>
+        <select id="time" name="time" required>
+          <option value="">Select Time</option>
+          {% for t in available_times %}
+          <option value="{{ t }}">{{ t }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="pickup_location">Pickup Location</label>
+        <input type="text" id="pickup_location" name="pickup_location" placeholder="Showroom / Home Delivery" required>
+
+        <label for="notes">Additional Notes</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Any special request?"></textarea>
+
+
+        <label for="advance">Advance Payment (0.1%)</label>
+        <input type="text" id="advance_payment" name="advance_payment" value="₹{{ advance_payment }}" readonly>
+
+
+        <!-- Hidden inputs for Razorpay payment -->
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id" value="{{ razorpay_order_id }}">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+
+        <div class="buttons">
+          <button class="btn" id="pay-btn">Pay Advance & {{ type|title }}</button>
+          <a href="{% url 'car_details' car.id %}" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <script>
+    
+    document.getElementById('pay-btn').onclick = function (e) {
+      e.preventDefault();
+
+      const form = document.querySelector('form');
+
+    
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const options = {
+        "key": "{{ razorpay_key_id }}", 
+        "amount": "{{ amount }}",        
+        "currency": "INR",
+        "name": "{{ car.name }}",
+        "description": "Advance Payment for {{ car.name }}",
+        "order_id": "{{ razorpay_order_id }}",
+        "handler": function (response) {
+          document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+          document.getElementById('razorpay_signature').value = response.razorpay_signature;
+          document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+
+          
+          fetch("{% url 'verify_payment' %}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: new URLSearchParams({
+              'razorpay_order_id': response.razorpay_order_id,
+              'razorpay_payment_id': response.razorpay_payment_id,
+              'razorpay_signature': response.razorpay_signature,
+
+              
+              'car_id': "{{ car.id }}",
+              'booking_type': "{{ type|lower }}",
+              'name': form.querySelector('#name').value,
+              'email': form.querySelector('#email').value,
+              'phone': form.querySelector('#phone').value,
+              'date': form.querySelector('#date').value,
+              'time': form.querySelector('#time').value,
+              'pickup_location': form.querySelector('#pickup_location').value,
+              'notes': form.querySelector('#notes').value,
+            })
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status === 'success') {
+                alert('✅ Payment successful!');
+                window.location.href = "{% url 'car_list' %}";
+              } else {
+                alert('❌ Payment verification failed: ' + data.message);
+              }
+            })
+            .catch(error => {
+              console.error("Error verifying payment:", error);
+              alert('Something went wrong while verifying payment.');
+            });
+        },
+        "prefill": {
+          "name": "{{ request.user.get_full_name }}",
+          "email": "{{ request.user.email }}"
+        },
+        "theme": {
+          "color": "#00bcd4"
+        }
+      };
+
+      const rzp1 = new Razorpay(options);
+
+      
+      rzp1.on('payment.failed', function (response) {
+        alert("❌ Payment failed: " + response.error.description);
+      });
+
+      
+      rzp1.open();
+    };
+  </script>
+
+
+</body>
+
+</html>

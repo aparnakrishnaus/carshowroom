@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | PrestigeLane</title>
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+  <style>
+    body {
+      background-color: #000;
+      color: #f5f5f5;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .register-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      padding: 40px;
+    }
+
+    /* --- Left Section --- */
+    .register-left {
+      width: 350px;
+      height: 350px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      margin: auto;
+      padding-left: 40px;
+    }
+
+    .register-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8);
+      border-radius: 15px;
+    }
+
+
+    /* --- Right Section --- */
+    .register-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-form {
+      background: rgba(192, 192, 192, 0.15);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 40px 35px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.1);
+    }
+
+    .register-form h2 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .form-group i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .form-group input {
+      width: calc(100% - 20px);
+      padding: 10px 10px 10px 25px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      outline: none;
+      font-size: 14px;
+      transition: all 0.4s ease;
+      box-sizing: border-box;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form-group input:focus {
+      border-color: rgb(255, 254, 254);
+      text-shadow: 0 0 8px rgba(192, 192, 192, 0.5);
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 10px;
+      left: 35px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus+label,
+    .form-group input:not(:placeholder-shown)+label {
+      top: -10px;
+      font-size: 12px;
+      color: #bbb;
+    }
+
+
+    .register-form button {
+      width: 100%;
+      background-color: #ffffff;
+      border: none;
+      border-radius: 25px;
+      color: #000;
+      font-weight: 600;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .register-form button:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .form-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .form-links a {
+      color: #ccc;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .form-links a:hover {
+      color: #fff;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-text-fill-color: #fff;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    input:-moz-autofill {
+      box-shadow: 0 0 0px 1000px rgba(192, 192, 192, 0.15) inset;
+      -moz-text-fill-color: #fff;
+    }
+
+    @media (max-width: 992px) {
+      .register-container {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .register-left {
+        display: none;
+      }
+
+      .register-left {
+        height: 250px;
+      }
+    }
+    .error-message {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 3px;
+}
+
+  </style>
+</head>
+<div class="register-container">
+  <!-- Left: Car Display -->
+  <div class="register-left">
+    <video autoplay muted loop playsinline disablepictureinpicture
+      controlslist="nodownload nofullscreen noremoteplayback" class="register-video">
+      <source src="{% static 'videos/profile-video.mp4' %}" type="video/mp4">
+    </video>
+
+  </div>
+
+  <!-- Right: Register Form -->
+  <div class="register-right">
+    <div class="register-form">
+      <h2>Create Account</h2>
+      
+      <form method="post" novalidate class="registerform">
+  {% csrf_token %}
+
+  <!-- Username -->
+  <div class="form-group">
+    <i class="fas fa-user"></i>
+    <input type="text" name="username" placeholder=" " value="{{ form.username.value|default_if_none:'' }}" required>
+    <label>Username</label>
+    {% if form.username.errors %}
+      <div class="error-message">
+        {{ form.username.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Email -->
+  <div class="form-group">
+    <i class="fas fa-envelope"></i>
+    <input type="email" name="email" placeholder=" " value="{{ form.email.value|default_if_none:'' }}" required>
+    <label>Email</label>
+    {% if form.email.errors %}
+      <div class="error-message">
+        {{ form.email.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Password -->
+  <div class="form-group">
+    <i class="fas fa-lock"></i>
+    <input type="password" name="password1" placeholder=" " required>
+    <label>Password</label>
+    {% if form.password1.errors %}
+      <div class="error-message">
+        {{ form.password1.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Confirm Password -->
+  <div class="form-group">
+    <i class="fas fa-lock"></i>
+    <input type="password" name="password2" placeholder=" " required>
+    <label>Confirm Password</label>
+    {% if form.password2.errors %}
+      <div class="error-message">
+        {{ form.password2.errors.0 }}
+      </div>
+    {% endif %}
+  </div>
+
+  <button type="submit">Register</button>
+</form>
+
+{% if form.non_field_errors %}
+  <div class="error-message">
+    {{ form.non_field_errors.0 }}
+  </div>
+{% endif %}
+
+
+      <div class="form-links">
+        <a href="{% url 'login' %}">Already have an account? <span style="color: rgb(135, 136, 222);">Login</span></a> |
+        <a href="{% url 'home' %}" style="color: rgb(205, 46, 46);">Quit</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>

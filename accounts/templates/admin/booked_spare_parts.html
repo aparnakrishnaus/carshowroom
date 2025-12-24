@@ -1,0 +1,345 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+
+<style>
+    .divider {
+        background-color: #333;
+        height: 2px;
+        margin-bottom: 15px;
+        border-radius: 2px;
+    }
+
+    #search-input {
+        padding: 6px 12px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 100%;
+        margin-right: 10px;
+        font-size: 0.9rem;
+    }
+
+    #all-button {
+        padding: auto;
+        border-radius: 5px;
+        background-color: #ccc;
+        border: none;
+        color: #000;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    #all-button:hover {
+        background-color: #bbb;
+    }
+
+
+    .table-responsive {
+         width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #333;
+    border-radius: 8px;
+    }
+
+    .table {
+        border-collapse: collapse;
+        background-color: #fff;
+        color: #000;
+        font-size: 0.85rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .table th {
+        background-color: #f5f5f5;
+        font-weight: 500;
+        background-color: #2c2c2c;
+        color: white;
+
+    }
+
+    .table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .badge-booked {
+        background-color: #ffc107;
+        color: #000;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+
+    .badge-delivered {
+        background-color: #28a745;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+    }
+
+    .text-center-muted {
+        text-align: center;
+        color: #666;
+        padding: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+        #search-input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        #all-button {
+            width: 100%;
+        }
+    }
+
+    td .deliver-form,
+    td .delete-form {
+        display: inline-block;
+        margin: 0 2px;
+    }
+
+
+    td .btn-success,
+    td .btn-danger {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    td .btn-success:hover {
+        background-color: #218838;
+    }
+
+    td .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    td .btn {
+        vertical-align: middle;
+    }
+     .badge-success {
+        background-color: #28a745;
+        color: #fff;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: #000;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+    }
+    .badge-cancelled {
+    background-color: #c2c2c2;
+    color: #030303;
+    padding: 2px 4px;
+    border-radius: 6px;
+    font-weight: 600;
+    white-space: nowrap;
+display: inline-block;
+}
+
+
+</style>
+
+
+
+    <div class="page-header mt-5">
+        <h2>Booked Spare Parts</h2>
+        {% include "accounts/_top_icons.html" %}
+        <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+
+<div class="divider"></div>
+
+<div class="d-flex mb-4 ">
+    <input type="text" id="search-input" placeholder="Search booked spare parts..." value="{{ search_query }}"
+        class="mb-0">
+    <button id="all-button" class="btn btn-secondary btn-sm">All</button>
+</div>
+
+<div class="table-responsive mt-4">
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Part</th>
+                <th>Category</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Address</th>
+                <th>Car</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Unit ₹</th>
+                <th>Quantity</th>
+                <th>Total ₹ </th>
+                 <th>Payment</th>
+                <th>Mode</th>
+                <th>Status</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in booked_parts %}
+            <tr class="part-row">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ booking.part.name }}</td>
+                <td>{{ booking.part.get_category_display }}</td>
+                <td>{{ booking.customer_name }}</td>
+                <td>{{ booking.created_at|date:"Y/m/d H:i a" }}</td>
+                <td>{{ booking.address }}</td>
+                <td>{{ booking.car_name }}</td>
+                <td>{{ booking.phone }}</td>
+                <td>{{ booking.email }}</td>
+                <td>{{ booking.part.price }}</td>
+                <td>{{ booking.quantity }}</td>
+                <td>₹{{ booking.amount }}</td>
+                <td>
+                    {% if booking.payment_method == 'cod' %}
+                    Cash on Delivery
+                    {% else %}
+                    Online Payment
+                    {% endif %}
+                </td>
+
+               <td>
+    {% if booking.deleted_by_user %}
+        <span class="badge-cancelled">Cancelled by User</span>
+    {% elif booking.status == 'booked' %}
+        <span class="badge-booked">Booked</span>
+    {% elif booking.status == 'delivered' %}
+        <span class="badge-delivered">Delivered</span>
+    {% else %}
+        <span class="badge-unknown">{{ booking.status }}</span>
+    {% endif %}
+</td>
+
+                <td>
+  {% if booking.is_refunded %}
+    <span class="badge badge-success" style="margin-left:5px;">Refunded</span>
+  {% elif booking.payment_method == 'cod' %}
+    {% if booking.is_paid %}
+      <span class="badge badge-success" style="margin-left:5px;">Paid</span>
+    {% else %}
+      <span class="badge badge-warning" style="margin-left:5px;">Pending</span>
+    {% endif %}
+  {% else %}
+    {% if booking.is_paid %}
+      <span class="badge badge-success" style="margin-left:5px;">Paid</span>
+    {% else %}
+      <span class="badge badge-warning" style="margin-left:5px;">Pending</span>
+    {% endif %}
+  {% endif %}
+</td>
+
+
+
+                <td>
+                    <!-- Deliver Button -->
+                    {% if booking.status == 'booked' %}
+                    <form action="{% url 'mark_delivered' booking.id %}" method="POST" style="display:inline;"
+                        class="deliver-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm mb-1">Deliver</button>
+                    </form>
+                    {% endif %}
+
+                    <!-- Delete Button -->
+                    <form action="{% url 'delete_booking' booking.id %}" method="POST" style="display:inline;"
+                        class="delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm mb-1">Delete</button>
+                    </form>
+                </td>
+
+            </tr>
+            {% empty %}
+            <tr id="no-part">
+                <td colspan="14" class="text-center text-muted">No booked spare parts found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById('search-input');
+        const allButton = document.getElementById('all-button');
+        const tableRows = document.querySelectorAll('tbody tr.part-row');
+
+        // live search
+        searchInput.addEventListener('input', function () {
+            const filter = this.value.toLowerCase().trim();
+            let anyVisible = false;
+            tableRows.forEach(row => {
+                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const category = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                if (name.includes(filter) || category.includes(filter)) {
+                    row.style.display = '';
+                    anyVisible = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            const noPart = document.getElementById('no-part');
+            if (noPart) noPart.style.display = anyVisible ? 'none' : '';
+        });
+
+        // All button
+        allButton.addEventListener('click', function () {
+            searchInput.value = '';
+            tableRows.forEach(row => row.style.display = '');
+            const noPart = document.getElementById('no-part');
+            if (noPart) noPart.style.display = 'none';
+        });
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Confirm Deliver
+        const deliverForms = document.querySelectorAll('.deliver-form');
+        deliverForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const confirmDeliver = confirm("Are you sure you want to mark this booking as delivered?");
+                if (!confirmDeliver) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Confirm Delete
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const confirmDelete = confirm("Are you sure you want to remove this booking?");
+                if (!confirmDelete) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,582 @@
+{% extends "dashboard_base.html" %}
+{% load humanize %}
+{% block content %}
+
+<style>
+  body {
+    background-color: #111;
+    color: #fff;
+  }
+
+  .container {
+    max-width: 1200px;
+    padding: 15px;
+  }
+
+  .divider {
+    background-color: #333;
+    height: 2px;
+    margin-bottom: 15px;
+    border-radius: 2px;
+  }
+
+  .summary {
+    background: #222;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+  }
+
+  table.table {
+    background: #fff;
+    color: #000;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 900px;
+  }
+
+  table thead {
+    background: #f2f2f2;
+    color: #333;
+  }
+
+  .table th {
+    background-color: #2c2c2c;
+    font-weight: 500;
+    color: #fff;
+  }
+
+  table th,
+  table td {
+    padding: 6px 8px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  table td.amount {
+    text-align: right;
+    font-weight: 500;
+  }
+
+  table tbody tr:hover {
+    background-color: #f9f9f9;
+    transition: 0.2s;
+  }
+
+
+  .btn-delete {
+    background: #f44336;
+    color: white;
+    font-size: 0.8rem;
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .text-center.text-muted {
+    padding: 15px 0;
+    color: #aaa;
+  }
+
+  th.select-all {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .select-all-inner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+
+  th.select-all input[type="checkbox"] {
+    vertical-align: middle;
+    transform: scale(0.9);
+    margin-bottom: 0;
+  }
+
+  .btn-completed,
+  .btn-all {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    background: #090909;
+    color: #fff;
+    border: 1px solid silver;
+    margin: 5px;
+  }
+
+  .btn-completed:hover,
+  .btn-all:hover {
+    background-color: #2196f3;
+  }
+
+  .btn-completed.active,
+  .btn-all.active {
+    background-color: rgb(55, 55, 212);
+    color: white;
+    border: 1px solid rgb(55, 55, 212);
+  }
+
+  .form-control {
+    margin-bottom: 0;
+  }
+
+  label {
+    color: rgb(123, 121, 121);
+  }
+
+  .badge-status,
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    color: #fff !important;
+  }
+
+  .status-paid {
+    background-color: #4caf50;
+  }
+
+  .status-approved {
+    background-color: #2196f3;
+  }
+
+  .status-pending {
+    background-color: #ff9800;
+    color: #000 !important;
+  }
+
+  .status-cancelled {
+    background-color: #f44336;
+  }
+
+  .badge.bg-success {
+    background-color: #4caf50;
+  }
+
+  .badge.bg-secondary {
+    background-color: #6c757d;
+  }
+
+  .badge.bg-info {
+    background-color: #17a2b8;
+  }
+
+  .badge.bg-warning {
+    background-color: #f9c74f;
+    color: #000 !important;
+  }
+
+
+  @media (max-width: 992px) {
+    .page-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .summary {
+      font-size: 0.8rem;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mb-2 {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    form.d-flex.align-items-center.flex-wrap-nowrap {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    form.d-flex input[type="date"] {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    form.d-flex button {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    table th,
+    table td {
+      font-size: 0.7rem;
+      padding: 4px 6px;
+    }
+
+    .btn-delete {
+      width: 100%;
+      padding: 8px;
+    }
+
+    .btn.btn-sm.btn-success {
+      font-size: 0.7rem;
+      padding: 3px 6px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .container {
+      padding: 8px;
+    }
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .page-header a i {
+      margin-top: 4px;
+    }
+
+    .summary {
+      text-align: left;
+    }
+  }
+
+  .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  .modal-footer {
+    border-top: none;
+  }
+
+  @media (max-width: 576px) {
+    .modal-dialog {
+      margin: 10px;
+    }
+
+    .modal-body input {
+      font-size: 0.85rem;
+    }
+
+    .modal-header h5 {
+      font-size: 1rem;
+    }
+
+    .modal-footer button {
+      font-size: 0.8rem;
+      padding: 6px 10px;
+    }
+  }
+
+
+  .popover .popover-close {
+    position: absolute;
+    top: -7px;
+    right: 5px;
+    z-index: 10;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: white !important;
+  }
+
+  .popover-header {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+  }
+   @media (max-width: 768px) {
+      .page-header {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .page-header h2 {
+        text-align: left;
+        font-size: 1.3rem;
+      }
+
+      .page-header .icon-btn {
+        font-size: 1.2rem;
+      }
+    }
+</style>
+
+
+<div class="container mt-5">
+  <div class="page-header">
+    <h2>Customer Payments</h2>
+    {% include "accounts/_top_icons.html" %}
+    <a href="{% url 'admin_dashboard' %}"><i class="fa-solid fa-arrow-left"></i></a>
+  </div>
+  <div class="divider"></div>
+
+  <!-- filters -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="mb-2">
+      <a href="{% url 'manage_payments' %}"
+        class="btn-all {% if request.resolver_match.url_name == 'manage_payments' %}active{% endif %}">
+        All ({{ total_count }})
+      </a>
+      <a href="{% url 'completed_payments' %}"
+        class="btn-completed me-2 {% if request.resolver_match.url_name == 'completed_payments' %}active{% endif %}">
+        Completed ({{ completed_count }})
+      </a>
+    </div>
+
+    <form method="GET" action="{% url 'manage_payments' %}" class="d-flex align-items-center flex-wrap-nowrap">
+      <input type="date" name="start_date" class="form-control me-2" style="width: 150px;" placeholder="Start Date"
+        value="{{ request.GET.start_date }}">
+      <input type="date" name="end_date" class="form-control me-2" style="width: 150px;" placeholder="End Date"
+        value="{{ request.GET.end_date }}">
+      <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+  </div>
+
+
+  <!-- amount -->
+  <div class="summary mt-4">
+    <strong>Total:</strong> ₹{{ total_amount|floatformat:2|intcomma }} |
+    <strong>Advance:</strong> ₹{{ total_advance|floatformat:2|intcomma }} |
+    <strong>Balance:</strong> ₹{{ total_balance|floatformat:2|intcomma }}
+  </div>
+
+
+  <a href="{% url 'add_payment' %}" class="btn btn-sm btn-success">Add Payment</a>
+
+  <!-- table -->
+  <form method="POST" action="{% url 'delete_multiple_payments' %}"
+    onsubmit="return confirm('Delete selected payments?');">
+    {% csrf_token %}
+
+    <div class="mt-2 mb-2 text-end">
+      <button type="submit" class="btn-delete">Delete Selected</button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cust</th>
+            <th>Type</th>
+            <th>Booked On</th>
+            <th>Total</th>
+            <th>Adv</th>
+            <th>Bal</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th class="select-all">
+              <div class="select-all-inner">
+                Del
+                <input type="checkbox" id="selectAll" onclick="toggleAll(this)">
+              </div>
+            </th>
+            <th>Fully Paid</th>
+            <th>Payment Info</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in payments %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.user.username }}</td>
+            <td>
+              {% if p.car %}
+              {{ p.car.name }}
+              {% elif p.service %}
+              {{ p.service.name }}
+              {% else %}
+              N/A
+              {% endif %}
+            </td>
+
+            <td>{{ p.booked_on|date:"d M Y" }}</td>
+            <td class="amount">{{ p.total_amount|floatformat:2|intcomma }}</td>
+            <td class="amount">{{ p.advance|floatformat:2|intcomma }}</td>
+            <td class="amount">{{ p.balance|floatformat:2|intcomma }}</td>
+            <td>{{ p.date|date:"d M Y" }}</td>
+            <td>
+              {% if p.status|lower == 'paid' %}
+              <span class="badge-status status-paid">{{ p.status }}</span>
+              {% elif p.status|lower == 'approved' %}
+              <span class="badge-status status-approved">{{ p.status }}</span>
+              {% elif p.status|lower == 'pending' %}
+              <span class="badge-status status-pending">{{ p.status }}</span>
+              {% elif 'cancelled' in p.status|lower %}
+              <span class="badge-status status-cancelled">{{ p.status }}</span>
+              {% else %}
+              <span class="badge-status" style="background:#999;">{{ p.status }}</span>
+              {% endif %}
+            </td>
+            <td><input type="checkbox" name="selected_bookings" value="{{ p.booking_id }}"></td>
+
+            <td>
+              {% if p.status|lower == 'approved' and p.balance > 0 %}
+              <button type="button" class="btn btn-sm btn-success badge"
+                onclick="openPayFullForm('{{ p.booking_id|escapejs }}', '{{ p.total_amount|escapejs }}', '{{ p.advance|escapejs }}', '{{ p.balance|escapejs }}')">
+                Pay Full
+              </button>
+              {% elif p.balance <= 0 %} <span class="badge bg-success">Fully Paid</span>
+                {% else %}
+                <span class="badge bg-secondary">Pending Approval</span>
+                {% endif %}
+            </td>
+
+            <td>
+              <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="popover" data-bs-html="true"
+                title="Payment Details" data-bs-content='
+      <button type="button" class="popover-close btn-close btn-close-sm float-end">&times;</button>
+      <div>
+        <strong>Order ID:</strong> {{ p.razorpay_order_id|default:"N/A" }}<br>
+        <strong>Payment ID:</strong> {{ p.razorpay_payment_id|default:"N/A" }}<br>
+        <strong>Signature:</strong> {{ p.razorpay_signature|default:"N/A" }}
+      </div>
+    '>
+                View
+              </button>
+            </td>
+
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="12" class="text-center text-muted">No payments found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </form>
+</div>
+
+
+<!-- Pay Full Amount Modal -->
+<div class="modal fade" id="payFullModal" tabindex="-1" aria-labelledby="payFullModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="payFullModalLabel">Pay Full Amount</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form method="POST" action="{% url 'pay_full_amount' 0 %}" id="payFullForm">
+        {% csrf_token %}
+        <div class="modal-body">
+          <input type="hidden" name="booking_id" id="formBookingId">
+
+          <div class="mb-3">
+            <label class="form-label">Total Amount :</label>
+            <input type="text" class="form-control" id="formTotalAmount" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Advance Paid :</label>
+            <input type="text" class="form-control" id="formAdvance" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Balance :</label>
+            <input type="text" class="form-control" id="formBalance" readonly>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Pay Full</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  function toggleAll(source) {
+    checkboxes = document.getElementsByName('selected_bookings');
+    for (var i = 0, n = checkboxes.length; i < n; i++) {
+      checkboxes[i].checked = source.checked;
+    }
+  }
+
+  // pay full amount form
+  function openPayFullForm(bookingId, total, advance, balance) {
+
+    document.getElementById('formBookingId').value = bookingId;
+    document.getElementById('formTotalAmount').value = total;
+    document.getElementById('formAdvance').value = advance;
+    document.getElementById('formBalance').value = balance;
+
+    const form = document.getElementById('payFullForm');
+    form.action = "{% url 'pay_full_amount' 0 %}".replace("0", bookingId);
+
+
+    const payFullModal = new bootstrap.Modal(document.getElementById('payFullModal'));
+    payFullModal.show();
+  }
+
+
+  // popover
+  document.addEventListener('DOMContentLoaded', function () {
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      var pop = new bootstrap.Popover(popoverTriggerEl, {
+        html: true,
+        sanitize: false,
+        trigger: 'focus'
+      });
+      return pop;
+    });
+
+
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.classList.contains('popover-close')) {
+        var pop = bootstrap.Popover.getInstance(e.target.closest('.popover'));
+        if (pop) pop.hide();
+      }
+    });
+  });
+
+
+</script>
+
+{% endblock %}
