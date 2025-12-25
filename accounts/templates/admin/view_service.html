@@ -162,8 +162,8 @@
                     </div>
                 </div>
                 {% endfor %}
-                {% else %}
-                {% for step in service.process_steps %}
+                {% if service.process_steps %}
+                {% for step in service.process_steps.steps %}
                 <div class="step-item">
                     <div class="step-icon">{{ forloop.counter }}</div>
                     <div class="step-details">
@@ -173,6 +173,7 @@
                 </div>
                 {% endfor %}
                 {% endif %}
+
             </div>
             {% else %}
             <p>No workflow steps added.</p>
