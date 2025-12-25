@@ -2,8 +2,7 @@
 
 A comprehensive Django based web application to manage car showroom operations, including cars, spare parts, bookings, orders, payments, and admin management.
 
-## Live Demo
-
+## Live Demo - https://prestigelane.pythonanywhere.com/
 
 ## Features
 ### User Side
@@ -21,12 +20,12 @@ A comprehensive Django based web application to manage car showroom operations, 
 ### Admin Side
 - **User Management:** Manage all users including admins, staff, and customers
 - **Dashboard & Notifications:** Admin notifications for orders and updates
-- **Order & Payment Management:** Track, update, and process orders and payments
+- **Order & Payment Management:** Track, update, and process orders and payments with refund option
 - **CRUD Operations:** Add, update, delete cars, services, and spare parts
 - **Recycling Bin:** Restore deleted items
 - **Reports:** Generate reports with Excel, PDF, print, and charts
 - **Security:** Change password, password reset for admin
-- 
+  
 ## Tech Stack
 - **Backend:** Django 4.1
 - **Frontend:** HTML, CSS, JavaScript, Bootstrap
@@ -47,27 +46,25 @@ A comprehensive Django based web application to manage car showroom operations, 
     <img src="https://github.com/user-attachments/assets/446eb7e8-b1ab-4f3a-9bd8-52e5d5c9a80a" alt="booking"width="300">
     <img src="https://github.com/user-attachments/assets/91d809c4-51da-4cbc-bfdd-b9f6aba9c11a" alt="footer"width="300">
 </div>
+
 <p align="center">Home • Cars • Services • Spare Parts • Login • Razorpay • Profile • Booking • Footer</p>
 
-
 ### Admin Side
-
 <div style="display:flex; flex-wrap: wrap; gap: 10px;">
-    <img src="https://github.com/user-attachments/assets/5cef5f15-2595-4112-a43e-a82d294321b0" alt="Home" width="300">
+    <img src="https://github.com/user-attachments/assets/dba422f0-d5aa-45f9-aced-8e998bd79980" alt="Home" width="300">
+    <img src="https://github.com/user-attachments/assets/f70725c9-6641-43fc-9a12-c631cc89ff18" alt="payments" width="300">
+    <img src="https://github.com/user-attachments/assets/71a0328d-8f51-4dbe-be7a-a6d74d65798e" alt="orders" width="300">
+    <img  src="https://github.com/user-attachments/assets/a0d7488c-efae-45c8-aaa8-4a5fee0bfce4" alt="reports" width="300">
+    <img src="https://github.com/user-attachments/assets/383dd576-5e2a-4346-bc61-58fdc2c603e4" alt="cars" width="300">
+    <img  src="https://github.com/user-attachments/assets/a4fc38c0-2697-4bec-9213-a72b16e80489"  alt="service" width="300">
+    <img src="https://github.com/user-attachments/assets/b8af9785-a154-4470-87a2-af7354016198"  alt="spareparts" width="300">
+    <img src="https://github.com/user-attachments/assets/ae9476f0-a960-49e1-a377-e049974e18ff" alt="subscribers" width="300">
+    <img src="https://github.com/user-attachments/assets/e5cddfec-a473-44e3-a724-8d5673ac72cd" alt="customers" width="300">
 </div>
-<p align="center"><i></i></p>
 
-
+<p align="center">Home • Payments • Orders • Reports • Cars • Services • Spare Parts • Subscribers • Razorpay • Customers </p>
 
 
 ##Author
-Aparna Krishna u s
-git clone https://github.com/aparnasukumaran/carshowroom.git
-
-
-
-
-
-
-
-
+- Aparna Krishna u s
+- git clone https://github.com/aparnasukumaran/carshowroom.git
