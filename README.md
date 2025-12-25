@@ -45,25 +45,36 @@ A comprehensive Django based web application to manage car showroom operations, 
 
 - <h2>📸 Screenshots</h2>
 
-<div style="display: flex; flex-wrap: wrap; gap: 12px;">
+<h3>📸 Screenshots</h3>
 
-  <div style="width: 23%; height: 160px; overflow: hidden; border-radius: 8px;">
-    <img src="https://github.com/user-attachments/assets/8d1b6421-b117-4d52-a98d-23d42be0de1e" alt="home" style="width:100%; height:100%; object-fit: cover;">
+<div align="center">
+
+  <div style="display:inline-block; width:23%; height:160px; margin:6px; overflow:hidden; border-radius:10px;">
+    <img src="https://github.com/user-attachments/assets/8d1b6421-b117-4d52-a98d-23d42be0de1e"
+         alt="Home"
+         style="width:100%; height:100%; object-fit:cover;">
   </div>
 
-  <div style="width: 23%; height: 160px; overflow: hidden; border-radius: 8px;">
-    <img alt="cars" src="https://github.com/user-attachments/assets/5398ffca-a1f5-484c-a412-983d6c538ae9" style="width:100%; height:100%; object-fit: cover;">
+  <div style="display:inline-block; width:23%; height:160px; margin:6px; overflow:hidden; border-radius:10px;">
+    <img src="https://github.com/user-attachments/assets/5398ffca-a1f5-484c-a412-983d6c538ae9"
+         alt="Cars"
+         style="width:100%; height:100%; object-fit:cover;">
   </div>
 
-  <div style="width: 23%; height: 160px; overflow: hidden; border-radius: 8px;">
-    <img alt="services" src="https://github.com/user-attachments/assets/7e273564-eb36-44d9-b699-9a567102d8a9" style="width:100%; height:100%; object-fit: cover;">
+  <div style="display:inline-block; width:23%; height:160px; margin:6px; overflow:hidden; border-radius:10px;">
+    <img src="https://github.com/user-attachments/assets/7e273564-eb36-44d9-b699-9a567102d8a9"
+         alt="Services"
+         style="width:100%; height:100%; object-fit:cover;">
   </div>
 
-  <div style="width: 23%; height: 160px; overflow: hidden; border-radius: 8px;">
-    <img alt="spareparts" src="https://github.com/user-attachments/assets/c1438a23-f92b-4af5-930b-b496dbe438f1" style="width:100%; height:100%; object-fit: cover;">
+  <div style="display:inline-block; width:23%; height:160px; margin:6px; overflow:hidden; border-radius:10px;">
+    <img src="https://github.com/user-attachments/assets/c1438a23-f92b-4af5-930b-b496dbe438f1"
+         alt="Spare Parts"
+         style="width:100%; height:100%; object-fit:cover;">
   </div>
 
 </div>
+
 
 
 ### Admin Side
@@ -77,5 +88,6 @@ A comprehensive Django based web application to manage car showroom operations, 
 ##Author
 Aparna Krishna u s
 git clone https://github.com/aparnasukumaran/carshowroom.git
+
 
 
