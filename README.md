@@ -47,7 +47,7 @@ A comprehensive Django based web application to manage car showroom operations, 
     <img src="https://github.com/user-attachments/assets/446eb7e8-b1ab-4f3a-9bd8-52e5d5c9a80a" alt="booking"width="300">
     <img src="https://github.com/user-attachments/assets/91d809c4-51da-4cbc-bfdd-b9f6aba9c11a" alt="footer"width="300">
 </div>
-<p align="center"><i>Home • Cars • Services • Spare Parts • Login • Razorpay • Profile • Booking • Footer</i></p>
+<p align="center">Home • Cars • Services • Spare Parts • Login • Razorpay • Profile • Booking • Footer</p>
 
 
 ### Admin Side
@@ -63,6 +63,7 @@ A comprehensive Django based web application to manage car showroom operations, 
 ##Author
 Aparna Krishna u s
 git clone https://github.com/aparnasukumaran/carshowroom.git
+
 
 
 
